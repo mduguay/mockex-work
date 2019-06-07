@@ -46,6 +46,12 @@ func reader(conn *websocket.Conn) {
 			log.Println(err)
 			return
 		}
+
+		if err := conn.WriteMessage(1, []byte("Hi from Mock Exchange")); err != nil {
+			log.Println(err)
+			return
+		}
+
 	}
 }
 
