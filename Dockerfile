@@ -8,8 +8,14 @@ FROM golang:${GO_VERSION} as builder
 # Principle of least privilege. Create non-root user
 RUN useradd -u 1134 mockexuser
 
+# This works with alpine image
+# RUN addgroup -S mockexuser && adduser -S -G mockexuser mockexuser
+
 # Set the working directory outside $GOPATH to support modules
 WORKDIR /src
+
+# Some deps need to be installed on the alpine image before go mod download will work
+# RUN apk add git
 
 # Fetch dependencies. They will be cached, speeding this up next time
 COPY ./go.mod ./go.sum ./
