@@ -4,11 +4,17 @@ The mock exchange contains a set of mock companies, that all offer mock stocks. 
 
 This service will stream the prices, and provide REST endpoints for user, portfolio, and transaction data.
 
+The web socket streams from `:8080/mockex`
+
 The client that subscribes to this service can be found here: [Mock Exchange Blotter](https://git.csnzoo.com/mduguay/mockex-blotter)
 
 ## To run
 
-`go run main.go`
+Build the docker image and run it
+
+`$ docker build -t mock-exchange .`
+
+`$ docker run -p 8000:8080 -d mock-exchange`
 
 ## Future
 
