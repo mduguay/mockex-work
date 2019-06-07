@@ -12,4 +12,11 @@ The client that subscribes to this service can be found here: [Mock Exchange Blo
 
 ## Future
 
-This will be containerized. This will use a postgres db to store portfolios and company data.
+- generate random prices
+- stream those prices
+- make it containerized
+- connect to Postgres db
+- create demo user
+- host REST endpoints for transactions
+- create multiple companies
+- allow multiple users/portfolios

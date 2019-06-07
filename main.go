@@ -13,7 +13,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func cryptoEndpoint(w http.ResponseWriter, r *http.Request) {
+func mockexEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
 	}
@@ -50,7 +50,7 @@ func reader(conn *websocket.Conn) {
 }
 
 func setupRoutes() {
-	http.HandleFunc("/crypto", cryptoEndpoint)
+	http.HandleFunc("/mockex", mockexEndpoint)
 }
 
 func main() {
