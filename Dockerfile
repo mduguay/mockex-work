@@ -5,6 +5,9 @@ ARG GO_VERSION=1.12.5
 # Should I use ${GO_VERSION}-alpine ?
 FROM golang:${GO_VERSION} as builder
 
+# Principle of least privilege. Create non-root user
+RUN useradd -u 1134 mockexuser
+
 # Set the working directory outside $GOPATH to support modules
 WORKDIR /src
 
@@ -28,11 +31,14 @@ FROM scratch as final
 # Copy the compiled app from the builder
 COPY --from=builder /app /app
 
+# Copy the permissionless user
+COPY --from=builder /etc/passwd /etc/passwd
+
 # Declare the port on which the server will be exposed
 EXPOSE 8080
 
 # Perform actions as unprivileged user
-# USER nobody:nobody
+USER mockexuser
 
 # Run the compiled binary
 ENTRYPOINT [ "/app" ]
