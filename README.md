@@ -18,9 +18,9 @@ Build the docker image and run it
 
 ## Future
 
+- Ping pong to determine when to close connection
+
 - generate random prices
-- stream those prices
-- make it containerized
 - connect to Postgres db
 - create demo user
 - host REST endpoints for transactions
