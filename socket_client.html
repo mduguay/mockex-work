@@ -27,6 +27,9 @@
             console.log("Socket Error: ", error);
         };
 
+        socket.onmessage = event => {
+          console.log("Got message from server: ", event.data);
+        };
     </script>
   </body>
 </html>

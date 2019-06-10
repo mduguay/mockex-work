@@ -4,62 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func mockexEndpoint(w http.ResponseWriter, r *http.Request) {
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-	}
-
-	log.Println("Client connected")
-	err = ws.WriteMessage(1, []byte("Hi Client"))
-	if err != nil {
-		log.Println(err)
-	}
-
-	reader(ws)
-}
-
-func reader(conn *websocket.Conn) {
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		fmt.Println(string(p))
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
-
-		if err := conn.WriteMessage(1, []byte("Hi from Mock Exchange")); err != nil {
-			log.Println(err)
-			return
-		}
-
-	}
-}
-
-func setupRoutes() {
-	http.HandleFunc("/mockex", mockexEndpoint)
-}
-
 func main() {
-	setupRoutes()
+	hub := newHub()
+	go hub.run()
+	http.HandleFunc("/mockex", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
+	fmt.Println("Serving on ws://127.0.0.1:8080/mockex")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
