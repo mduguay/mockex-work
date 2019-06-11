@@ -7,12 +7,15 @@ import (
 )
 
 func main() {
-	setupEndpoint()
-}
-
-func setupEndpoint() {
 	hub := newHub()
 	go hub.run()
+	var mkt Market
+	mkt.init()
+	go mkt.openingBell(hub.broadcast)
+	setupEndpoint(hub)
+}
+
+func setupEndpoint(hub *Hub) {
 	http.HandleFunc("/mockex", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})

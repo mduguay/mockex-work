@@ -7,11 +7,24 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"time"
 )
 
-type quote struct {
+type Quote struct {
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
+}
+
+type Stock struct {
+	symbol string
+	price  float64
+	min    float64
+	max    float64
+	vol    float64
+}
+
+type Market struct {
+	stocks []*Stock
 }
 
 const (
@@ -41,8 +54,27 @@ func getDayPrices() []float64 {
 	return prices
 }
 
+func (m *Market) init() {
+	m.stocks = []*Stock{
+		{
+			symbol: "HFZ",
+			price:  11.34,
+			min:    0.0,
+			max:    1.0,
+			vol:    0.02,
+		},
+		{
+			symbol: "IFO",
+			price:  6.60,
+			min:    0.0,
+			max:    1.2,
+			vol:    0.03,
+		},
+	}
+}
+
 func initialData() []byte {
-	quotes := []quote{
+	quotes := []Quote{
 		{
 			Symbol: "HFZ",
 			Price:  12.34,
@@ -59,6 +91,30 @@ func initialData() []byte {
 	}
 
 	return b
+}
+
+func (s *Stock) tickPrice() {
+	s.price = genNextPrice(s.price)
+}
+
+func (m *Market) openingBell(broadcast chan []byte) {
+	qs := make([]*Quote, len(m.stocks))
+	for {
+		time.Sleep(time.Second * 2)
+		for i, s := range m.stocks {
+			s.tickPrice()
+			q := &Quote{
+				Symbol: s.symbol,
+				Price:  s.price,
+			}
+			qs[i] = q
+		}
+		qsb, err := json.Marshal(qs)
+		if err != nil {
+			log.Println(err)
+		}
+		broadcast <- qsb
+	}
 }
 
 func writeToFile(nums []float64) {
