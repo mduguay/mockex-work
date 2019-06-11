@@ -26,6 +26,7 @@ func (h *Hub) run() {
 		case client := <-h.register:
 			fmt.Println("Hub: Registering connection")
 			h.clients[client] = true
+			client.send <- initialData()
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				fmt.Println("Hub: Unregistering connection")

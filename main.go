@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 func main() {
-	dumpDayPrices()
+	setupEndpoint()
 }
 
 func setupEndpoint() {
@@ -18,13 +17,5 @@ func setupEndpoint() {
 		serveWs(hub, w, r)
 	})
 	fmt.Println("Serving on ws://127.0.0.1:8080/mockex")
-	go tickWriter(hub)
 	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func tickWriter(h *Hub) {
-	for {
-		time.Sleep(time.Second * 2)
-		h.broadcast <- []byte("tick")
-	}
 }

@@ -2,10 +2,17 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 )
+
+type quote struct {
+	Symbol string  `json:"symbol"`
+	Price  float64 `json:"price"`
+}
 
 const (
 	start = 30.0
@@ -32,6 +39,26 @@ func getDayPrices() []float64 {
 		prices[i] = genNextPrice(prices[i-1])
 	}
 	return prices
+}
+
+func initialData() []byte {
+	quotes := []quote{
+		{
+			Symbol: "HFZ",
+			Price:  12.34,
+		},
+		{
+			Symbol: "XYZ",
+			Price:  54.55,
+		},
+	}
+
+	b, err := json.Marshal(quotes)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return b
 }
 
 func writeToFile(nums []float64) {
