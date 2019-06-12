@@ -41,6 +41,7 @@ func (c *Client) writePump() {
 			fmt.Println("Client: Closing w")
 			if err := w.Close(); err != nil {
 				fmt.Println("Client: Err != on w.Close()")
+				c.hub.unregister <- c
 				return
 			}
 		}
