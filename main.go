@@ -7,12 +7,16 @@ import (
 )
 
 func main() {
-	hub := newHub()
-	go hub.run()
-	var mkt Market
-	mkt.init()
-	go mkt.openingBell(hub.broadcast)
-	setupEndpoint(hub)
+	var stg Storage
+	stg.connect()
+	stg.users()
+	stg.disconnect()
+	// hub := newHub()
+	// go hub.run()
+	// var mkt Market
+	// mkt.init()
+	// go mkt.openingBell(hub.broadcast)
+	// setupEndpoint(hub)
 }
 
 func setupEndpoint(hub *Hub) {
