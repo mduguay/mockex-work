@@ -18,11 +18,9 @@ Build the docker image and run it
 
 ## Future
 
-- Ping pong to determine when to close connection
+- Close connection when client disconnects
+- Separate routines per company
 
-- generate random prices
-- connect to Postgres db
-- create demo user
-- host REST endpoints for transactions
-- create multiple companies
-- allow multiple users/portfolios
+- Historic data
+- Users
+- Transactions
