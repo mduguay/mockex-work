@@ -21,6 +21,7 @@ type Storage struct {
 }
 
 func (s *Storage) connect() {
+	fmt.Println("Connecting")
 	conString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := sql.Open("postgres", conString)
 	if err != nil {
@@ -36,6 +37,7 @@ func (s *Storage) connect() {
 }
 
 func (s *Storage) disconnect() {
+	fmt.Println("Disconnecting")
 	s.db.Close()
 }
 
@@ -65,6 +67,16 @@ func (s *Storage) users() {
 	}
 }
 
-func (s *Storage) singleUser() {
-	//statement := `SELECT id, email FROM users WHERE id=$1`
+func (s *Storage) readUser(id int, result chan string) {
+	fmt.Println("Preparing")
+	stmt, err := s.db.Prepare("select email from users where id = $1")
+	check(err)
+	defer stmt.Close()
+	fmt.Println("Querying")
+	var name string
+	err = stmt.QueryRow(id).Scan(&name)
+	check(err)
+	fmt.Println("Publishing")
+	fmt.Println(name)
+	result <- name
 }
