@@ -81,9 +81,21 @@ func (s *Storage) readTrader(id int, result chan string) {
 	result <- name
 }
 
-func (s *Storage) readCompanies() {
+func (s *Storage) readCompanies() (cs []Company) {
 	stmt, err := s.db.Prepare("select id, symbol from company")
 	check(err)
 	defer stmt.Close()
-
+	rows, err := stmt.Query()
+	check(err)
+	defer rows.Close()
+	for rows.Next() {
+		var c Company
+		err := rows.Scan(&c.Id, &c.Symbol)
+		check(err)
+		cs = append(cs, c)
+	}
+	if err = rows.Err(); err != nil {
+		check(err)
+	}
+	return
 }

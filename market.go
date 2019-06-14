@@ -10,6 +10,11 @@ import (
 	"time"
 )
 
+type Company struct {
+	Id     int
+	Symbol string
+}
+
 type Quote struct {
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
