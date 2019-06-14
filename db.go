@@ -67,9 +67,9 @@ func (s *Storage) users() {
 	}
 }
 
-func (s *Storage) readUser(id int, result chan string) {
+func (s *Storage) readTrader(id int, result chan string) {
 	fmt.Println("Preparing")
-	stmt, err := s.db.Prepare("select email from users where id = $1")
+	stmt, err := s.db.Prepare("select email from trader where id = $1")
 	check(err)
 	defer stmt.Close()
 	fmt.Println("Querying")
@@ -79,4 +79,11 @@ func (s *Storage) readUser(id int, result chan string) {
 	fmt.Println("Publishing")
 	fmt.Println(name)
 	result <- name
+}
+
+func (s *Storage) readCompanies() {
+	stmt, err := s.db.Prepare("select id, symbol from company")
+	check(err)
+	defer stmt.Close()
+
 }

@@ -10,17 +10,29 @@ The client that subscribes to this service can be found here: [Mock Exchange Blo
 
 ## To run
 
-Build the docker image and run it
+Postgres
+```
+pg_ctl -D /usr/local/var/postgres start
+psql -U postgres
+\c mockex
+\i initdb.sql
+\dt
+```
 
-`$ docker build -t mock-exchange .`
+Go
+```
+go run *.go
+```
 
-`$ docker run -p 8000:8080 -d mock-exchange`
+Docker
+```
+docker build -t mock-exchange .
+docker run -p 8080:8080 -d mock-exchange
+```
 
 ## Future
 
-- Close connection when client disconnects
+- Holdings
 - Separate routines per company
-
 - Historic data
-- Users
 - Transactions

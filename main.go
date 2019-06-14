@@ -8,12 +8,15 @@ import (
 
 func main() {
 	fmt.Println("Hello")
+
 	var stg Storage
 	stg.connect()
+	defer stg.disconnect()
+
 	result := make(chan string)
-	go stg.readUser(1, result)
+	go stg.readTrader(1, result)
 	fmt.Println(<-result)
-	stg.disconnect()
+
 	// hub := newHub()
 	// go hub.run()
 	// var mkt Market
@@ -32,6 +35,6 @@ func setupEndpoint(hub *Hub) {
 
 func check(err error) {
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 }
