@@ -32,7 +32,7 @@ docker run -p 8080:8080 -d mock-exchange
 
 ## Future
 
-- Holdings
+- Send holding to client
+- Handle order from client
 - Separate routines per company
 - Historic data
-- Transactions

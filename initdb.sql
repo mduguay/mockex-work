@@ -20,17 +20,20 @@ CREATE TABLE holding (
 
 INSERT INTO holding(trader_id, company_id, shares) VALUES (1, 1, 100);
 
+CREATE TABLE trade (
+  id SERIAL PRIMARY KEY,
+  trader_id INT REFERENCES trader(id),
+  company_id INT REFERENCES company(id),
+  direction BOOLEAN,
+  shares INT,
+  price NUMERIC(9, 2)
+);
+
+INSERT INTO trade(trader_id, company_id, shares, price) VALUES (1, 1, 100, 134.66);
+
 SELECT t.email, c.symbol, h.shares
 FROM holding h
 LEFT JOIN company c
 ON h.company_id = c.id
 LEFT JOIN trader t 
 ON h.trader_id = t.id;
-
-CREATE TABLE order (
-  id SERIAL PRIMARY KEY,
-  trader_id INT REFERENCES trader(id)
-  company_id INT REFERENCES company(id)
-  shares INT
-  price NUMERIC(9, 2)
-);
