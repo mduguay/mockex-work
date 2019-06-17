@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"database/sql"
@@ -20,7 +20,7 @@ type Storage struct {
 	db *sql.DB
 }
 
-func (s *Storage) connect() {
+func (s *Storage) Connect() {
 	fmt.Println("Connecting")
 	conString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := sql.Open("postgres", conString)
@@ -36,7 +36,7 @@ func (s *Storage) connect() {
 	s.db = db
 }
 
-func (s *Storage) disconnect() {
+func (s *Storage) Disconnect() {
 	fmt.Println("Disconnecting")
 	s.db.Close()
 }
