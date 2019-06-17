@@ -81,7 +81,7 @@ func (s *Storage) readTrader(id int, result chan string) {
 	result <- name
 }
 
-func (s *Storage) readCompanies() (cs []Company) {
+func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	stmt, err := s.db.Prepare("select id, symbol from company")
 	check(err)
 	defer stmt.Close()
@@ -89,10 +89,8 @@ func (s *Storage) readCompanies() (cs []Company) {
 	check(err)
 	defer rows.Close()
 	for rows.Next() {
-		var c Company
-		err := rows.Scan(&c.Id, &c.Symbol)
-		check(err)
-		cs = append(cs, c)
+		item := scanner.ScanRow(rows)
+		items = append(items, item)
 	}
 	if err = rows.Err(); err != nil {
 		check(err)

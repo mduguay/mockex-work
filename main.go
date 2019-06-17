@@ -17,8 +17,12 @@ func main() {
 	go stg.readTrader(1, result)
 	fmt.Println(<-result)
 
-	cs := stg.readCompanies()
-	fmt.Printf("%+v\n", cs)
+	cs := new(CompanyScanner)
+	companies := stg.readMultiple(cs)
+	for _, c := range companies {
+		fmt.Println(*c.(*Company))
+	}
+	fmt.Printf("%+v\n", companies)
 	// hub := newHub()
 	// go hub.run()
 	// var mkt Market

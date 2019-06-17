@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,11 @@ import (
 type Company struct {
 	Id     int
 	Symbol string
+}
+
+func (c *Company) ScanRow(row *sql.Rows) {
+	err := row.Scan(&c.Id, &c.Symbol)
+	check(err)
 }
 
 type Quote struct {
