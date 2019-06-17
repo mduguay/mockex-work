@@ -3,14 +3,11 @@ CREATE TABLE trader (
   email TEXT UNIQUE NOT NULL
 );
 
-INSERT INTO trader(email) VALUES ('admin@mockex.com');
-
 CREATE TABLE company (
   id SERIAL PRIMARY KEY,
   symbol TEXT UNIQUE NOT NULL
 );
 
-INSERT INTO company(symbol) VALUES ('HFZ'), ('IFO');
 
 CREATE TABLE holding (
   trader_id INT REFERENCES trader(id),
@@ -18,7 +15,7 @@ CREATE TABLE holding (
   shares INT
 );
 
-INSERT INTO holding(trader_id, company_id, shares) VALUES (1, 1, 100);
+CREATE INDEX idx_holding_trader_id ON holding(trader_id);
 
 CREATE TABLE trade (
   id SERIAL PRIMARY KEY,
@@ -28,12 +25,3 @@ CREATE TABLE trade (
   shares INT,
   price NUMERIC(9, 2)
 );
-
-INSERT INTO trade(trader_id, company_id, shares, price) VALUES (1, 1, 100, 134.66);
-
-SELECT t.email, c.symbol, h.shares
-FROM holding h
-LEFT JOIN company c
-ON h.company_id = c.id
-LEFT JOIN trader t 
-ON h.trader_id = t.id;
