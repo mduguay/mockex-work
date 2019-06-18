@@ -7,7 +7,7 @@ import (
 
 type Scanner interface {
 	ScanRow(rows *sql.Rows) interface{}
-	GetQuery() string
+	Query() string
 }
 
 type CompanyScanner struct{}
@@ -19,8 +19,16 @@ func (cs *CompanyScanner) ScanRow(rows *sql.Rows) interface{} {
 	return c
 }
 
-func (cs *CompanyScanner) GetQuery() string {
-	return "select id, symbol from company"
+// Should return | symbol | lastprice |
+func (cs *CompanyScanner) Query() string {
+	return `
+		select c.symbol, p.price
+		from company c
+		left join ( select p.company_id, price p
+		on c.id = p.company_id
+		order by p.stamp desc
+		group by c.symbol;
+		`
 }
 
 type HoldingScanner struct {
@@ -34,7 +42,7 @@ func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	return h
 }
 
-func (hs *HoldingScanner) GetQuery() string {
+func (hs *HoldingScanner) Query() string {
 	return fmt.Sprintf(`
 		select h.trader_id, c.symbol, h.shares
 		from holding h

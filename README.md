@@ -15,8 +15,9 @@ Postgres
 pg_ctl -D /usr/local/var/postgres start
 psql -U postgres
 \c mockex
-\i initdb.sql
+\i scripts/initdb.sql
 \dt
+\d holding
 ```
 
 Go
@@ -38,11 +39,13 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
+- Read One SQL
 - Get latest price to start feed
 - Router handlers return data instead of printing it
 - Difference between company and stock
+- Store min / max / vol in db?
 - Tick market even when no clients
-- Trade endpoint
+- Trade API
 - Seed historic info
 - Historic info API
 - Docker compose Postgres container
