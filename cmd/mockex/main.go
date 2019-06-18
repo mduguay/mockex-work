@@ -5,14 +5,19 @@ import (
 )
 
 func main() {
-
-	sto := internal.Storage{}
+	sto := new(internal.Storage)
 	sto.Connect()
 	defer sto.Disconnect()
 
-	router := internal.Router{
-		Stg: sto,
-	}
+	hub := internal.NewHub()
+	go hub.Run()
 
+	mkt := internal.NewMarket()
+	go mkt.OpeningBell(hub.Broadcast)
+
+	router := internal.Router{
+		Storage: sto,
+		Hub:     hub,
+	}
 	router.HandleRequests()
 }

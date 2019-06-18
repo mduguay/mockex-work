@@ -65,7 +65,8 @@ func getDayPrices() []float64 {
 	return prices
 }
 
-func (m *Market) init() {
+func NewMarket() *Market {
+	m := new(Market)
 	m.stocks = []*Stock{
 		{
 			symbol: "HFZ",
@@ -82,6 +83,7 @@ func (m *Market) init() {
 			vol:    0.03,
 		},
 	}
+	return m
 }
 
 func initialData() []byte {
@@ -108,7 +110,7 @@ func (s *Stock) tickPrice() {
 	s.price = genNextPrice(s.price)
 }
 
-func (m *Market) openingBell(broadcast chan []byte) {
+func (m *Market) OpeningBell(broadcast chan []byte) {
 	qs := make([]*Quote, len(m.stocks))
 	for {
 		time.Sleep(time.Second * 2)

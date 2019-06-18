@@ -4,22 +4,22 @@ import "fmt"
 
 type Hub struct {
 	clients    map[*Client]bool
-	broadcast  chan []byte
+	Broadcast  chan []byte
 	register   chan *Client
 	unregister chan *Client
 }
 
-func newHub() *Hub {
+func NewHub() *Hub {
 	fmt.Println("Hub: Creating new hub")
 	return &Hub{
-		broadcast:  make(chan []byte),
+		Broadcast:  make(chan []byte),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) Run() {
 	fmt.Println("Hub: Running...")
 	for {
 		select {
@@ -33,7 +33,7 @@ func (h *Hub) run() {
 				delete(h.clients, client)
 				close(client.send)
 			}
-		case message := <-h.broadcast:
+		case message := <-h.Broadcast:
 			for client := range h.clients {
 				select {
 				case client.send <- message:

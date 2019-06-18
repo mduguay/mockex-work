@@ -21,13 +21,19 @@ psql -U postgres
 
 Go
 ```
-go run *.go
+go run cmd/mockex/main.go
 ```
 
 Docker
 ```
 docker build -t mock-exchange .
 docker run -p 8080:8080 -d mock-exchange
+```
+
+Listen to the feed
+```
+npm install -g wscat
+wscat -c ws://localhost:8080/mockex
 ```
 
 ## Future
