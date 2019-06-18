@@ -38,7 +38,11 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Send holding to client
-- Handle order from client
-- Separate routines per company
-- Historic data
+- Get latest price to start feed
+- Router handlers return data instead of printing it
+- Difference between company and stock
+- Tick market even when no clients
+- Trade endpoint
+- Seed historic info
+- Historic info API
+- Docker compose Postgres container
