@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	var sto internal.Storage
+	sto := internal.Storage{}
 	sto.Connect()
 	defer sto.Disconnect()
 

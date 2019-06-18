@@ -82,7 +82,7 @@ func (s *Storage) readTrader(id int, result chan string) {
 }
 
 func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
-	stmt, err := s.db.Prepare("select id, symbol from company")
+	stmt, err := s.db.Prepare(scanner.GetQuery())
 	check(err)
 	defer stmt.Close()
 	rows, err := stmt.Query()

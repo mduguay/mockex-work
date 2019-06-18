@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"database/sql"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -16,11 +15,6 @@ type Company struct {
 	Symbol string
 }
 
-func (c *Company) ScanRow(row *sql.Rows) {
-	err := row.Scan(&c.Id, &c.Symbol)
-	check(err)
-}
-
 type Quote struct {
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
@@ -32,6 +26,12 @@ type Stock struct {
 	min    float64
 	max    float64
 	vol    float64
+}
+
+type Holding struct {
+	Uid    int
+	Symbol string
+	Shares int
 }
 
 type Market struct {
