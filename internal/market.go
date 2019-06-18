@@ -1,12 +1,9 @@
 package internal
 
 import (
-	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
-	"os"
 	"time"
 )
 
@@ -35,7 +32,8 @@ type Holding struct {
 }
 
 type Market struct {
-	stocks []*Stock
+	stocks  []*Stock
+	Storage *Storage
 }
 
 const (
@@ -65,45 +63,20 @@ func getDayPrices() []float64 {
 	return prices
 }
 
-func NewMarket() *Market {
-	m := new(Market)
-	m.stocks = []*Stock{
-		{
-			symbol: "HFZ",
-			price:  11.34,
-			min:    0.0,
-			max:    1.0,
+func (m *Market) Prime() {
+	cs := new(CompanyScanner)
+	companies := m.Storage.readMultiple(cs)
+
+	m.stocks = make([]*Stock, len(companies))
+	for i, c := range companies {
+		m.stocks[i] = &Stock{
+			symbol: c.(*Company).Symbol,
+			price:  30.00,
+			min:    0.00,
+			max:    1.00,
 			vol:    0.02,
-		},
-		{
-			symbol: "IFO",
-			price:  6.60,
-			min:    0.0,
-			max:    1.2,
-			vol:    0.03,
-		},
+		}
 	}
-	return m
-}
-
-func initialData() []byte {
-	quotes := []Quote{
-		{
-			Symbol: "HFZ",
-			Price:  12.34,
-		},
-		{
-			Symbol: "XYZ",
-			Price:  54.55,
-		},
-	}
-
-	b, err := json.Marshal(quotes)
-	if err != nil {
-		log.Println(err)
-	}
-
-	return b
 }
 
 func (s *Stock) tickPrice() {
@@ -130,22 +103,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 	}
 }
 
-func writeToFile(nums []float64) {
-	file, _ := os.Create("prices.csv")
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	strings := make([]string, len(nums))
-
-	for i, num := range nums {
-		strings[i] = fmt.Sprintf("%v", num)
-	}
-	writer.Write(strings)
-}
-
-func dumpDayPrices() {
-	p := getDayPrices()
-	writeToFile(p)
-}
+// func generateHistoricData() {
+// 	p := getDayPrices()
+// 	//insert into db
+// }

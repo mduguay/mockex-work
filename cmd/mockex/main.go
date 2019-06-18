@@ -12,7 +12,10 @@ func main() {
 	hub := internal.NewHub()
 	go hub.Run()
 
-	mkt := internal.NewMarket()
+	mkt := internal.Market{
+		Storage: sto,
+	}
+	mkt.Prime()
 	go mkt.OpeningBell(hub.Broadcast)
 
 	router := internal.Router{
