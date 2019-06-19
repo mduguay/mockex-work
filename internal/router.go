@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -38,6 +39,7 @@ func (rtr *Router) holdingHandler(w http.ResponseWriter, r *http.Request) {
 	hs := new(HoldingScanner)
 	hs.uid = key
 	holdings := rtr.Storage.readMultiple(hs)
+	json.NewEncoder(w).Encode(holdings)
 	for _, c := range holdings {
 		fmt.Println(*c.(*Holding))
 	}

@@ -8,8 +8,8 @@ import (
 )
 
 type Company struct {
-	Id     int
-	Symbol string
+	Symbol    string
+	LastPrice float64
 }
 
 type Quote struct {
