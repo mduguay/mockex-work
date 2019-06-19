@@ -45,33 +45,33 @@ func (m *Market) Prime() {
 	stocks := m.Storage.readMultiple(ss)
 
 	m.stocks = make([]*Stock, len(stocks))
+
 	for i, s := range stocks {
-		m.stocks[i] = &Stock{
-			symbol: s.(*Stock).symbol,
-			price:  30.00,
-			min:    0.00,
-			max:    1.00,
-			vol:    0.02,
-		}
+		m.stocks[i] = s.(*Stock)
 	}
 }
 
-func (s *Stock) tickPrice() {
+func (s *Stock) tickPrice(p float64) float64 {
 	rnd := s.min + rand.Float64()*(s.max-s.min)
 	changePct := 2 * s.vol * rnd
 	if changePct > s.vol {
 		changePct -= (2 * s.vol)
 	}
-	changeAmt := s.price * changePct
-	s.price = s.price + changeAmt
+	changeAmt := p * changePct
+	return p + changeAmt
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {
 	qs := make([]*Quote, len(m.stocks))
+	// Fetch quotes
+	// qs := new(QuoteScanner)
+	// quotes := m.Storage.readMultiple(qs)
+	// There's a 1:1 mapping between quotes (latest price) and stocks (metadata)
+	// How should these be linked
 	for {
 		time.Sleep(time.Second * 2)
 		for i, s := range m.stocks {
-			s.tickPrice()
+			s.price = s.tickPrice(s.price)
 			q := &Quote{
 				Symbol: s.symbol,
 				Price:  s.price,

@@ -38,6 +38,7 @@ CREATE INDEX idx_price_company ON price(company_id)
 CREATE TABLE stock (
   id SERIAL PRIMARY KEY,
   company_id INT REFERENCES company(id),
+  price NUMERIC(9, 2),
   vol NUMERIC(6, 4),
   minchange NUMERIC(6, 4),
   maxchange NUMERIC(6, 4)

@@ -39,9 +39,9 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
+- Prime reads from stocks, which includes vol and start price info.
 - Read One SQL
-- Difference between company and stock
-- Store min / max / vol in db?
+- Make read multiple SQL async
 - Tick market even when no clients
 - Trade API
 - Seed historic info
