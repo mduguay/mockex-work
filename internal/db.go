@@ -46,27 +46,6 @@ var (
 	name string
 )
 
-func (s *Storage) users() {
-	rows, err := s.db.Query("select id, email from users where id = $1", 1)
-	if err != nil {
-		log.Println(err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		err := rows.Scan(&id, &name)
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(id, name)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
-	}
-}
-
 func (s *Storage) readTrader(id int, result chan string) {
 	fmt.Println("Preparing")
 	stmt, err := s.db.Prepare("select email from trader where id = $1")
