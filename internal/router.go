@@ -25,24 +25,16 @@ func (rtr *Router) HandleRequests() {
 func (rtr *Router) companyHandler(w http.ResponseWriter, r *http.Request) {
 	cs := new(CompanyScanner)
 	companies := rtr.Storage.readMultiple(cs)
-	for _, c := range companies {
-		fmt.Println(*c.(*Company))
-	}
+	json.NewEncoder(w).Encode(companies)
 }
 
 func (rtr *Router) holdingHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["uid"]
-
-	fmt.Println("Getting holdings for user ", key)
-
 	hs := new(HoldingScanner)
 	hs.uid = key
 	holdings := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(holdings)
-	for _, c := range holdings {
-		fmt.Println(*c.(*Holding))
-	}
 }
 
 func (rtr *Router) traderHandler(w http.ResponseWriter, r *http.Request) {
