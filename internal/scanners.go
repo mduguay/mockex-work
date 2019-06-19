@@ -6,13 +6,13 @@ import (
 )
 
 type Scanner interface {
-	ScanRow(rows *sql.Rows) interface{}
 	Query() string
+	ScanRow(rows *sql.Rows) interface{}
 }
 
-type CompanyScanner struct{}
+type QuoteScanner struct{}
 
-func (cs *CompanyScanner) Query() string {
+func (qs *QuoteScanner) Query() string {
 	return `
 		select c.symbol, p.price lastprice
 		from price p
@@ -28,11 +28,11 @@ func (cs *CompanyScanner) Query() string {
 		`
 }
 
-func (cs *CompanyScanner) ScanRow(rows *sql.Rows) interface{} {
-	c := new(Company)
-	err := rows.Scan(&c.Symbol, &c.LastPrice)
+func (qs *QuoteScanner) ScanRow(rows *sql.Rows) interface{} {
+	q := new(Quote)
+	err := rows.Scan(&q.Symbol, &q.Price)
 	check(err)
-	return c
+	return q
 }
 
 type HoldingScanner struct {
@@ -52,4 +52,22 @@ func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	err := rows.Scan(&h.Uid, &h.Symbol, &h.Shares)
 	check(err)
 	return h
+}
+
+type StockScanner struct{}
+
+func (ss *StockScanner) Query() string {
+	return `
+		select c.symbol, s.vol, s.minchange, s.maxchange
+		from stock s
+		left join company c
+		on s.company_id = c.id
+		`
+}
+
+func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
+	s := new(Stock)
+	err := rows.Scan(&s.symbol, &s.vol, &s.min, &s.max)
+	check(err)
+	return s
 }

@@ -40,7 +40,6 @@ wscat -c ws://localhost:8080/mockex
 ## Future
 
 - Read One SQL
-- Router handlers return data instead of printing it
 - Difference between company and stock
 - Store min / max / vol in db?
 - Tick market even when no clients

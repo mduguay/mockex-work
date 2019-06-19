@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-type Company struct {
-	Symbol    string
-	LastPrice float64
-}
-
 type Quote struct {
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
@@ -36,41 +31,23 @@ type Market struct {
 	Storage *Storage
 }
 
-const (
-	start = 30.0
-	min   = 0.0
-	max   = 1.0
-	vol   = 0.02
-)
-
-func genNextPrice(oldPrice float64) float64 {
-	rnd := min + rand.Float64()*(max-min)
-	changePct := 2 * vol * rnd
-	if changePct > vol {
-		changePct -= (2 * vol)
-	}
-	changeAmt := oldPrice * changePct
-	newPrice := oldPrice + changeAmt
-	return newPrice
-}
-
-func getDayPrices() []float64 {
-	prices := make([]float64, 96)
-	prices[0] = start
-	for i := 1; i < 96; i++ {
-		prices[i] = genNextPrice(prices[i-1])
-	}
-	return prices
-}
+// func getDayPrices() []float64 {
+// 	prices := make([]float64, 96)
+// 	prices[0] = start
+// 	for i := 1; i < 96; i++ {
+// 		prices[i] = genNextPrice(prices[i-1])
+// 	}
+// 	return prices
+// }
 
 func (m *Market) Prime() {
-	cs := new(CompanyScanner)
-	companies := m.Storage.readMultiple(cs)
+	ss := new(StockScanner)
+	stocks := m.Storage.readMultiple(ss)
 
-	m.stocks = make([]*Stock, len(companies))
-	for i, c := range companies {
+	m.stocks = make([]*Stock, len(stocks))
+	for i, s := range stocks {
 		m.stocks[i] = &Stock{
-			symbol: c.(*Company).Symbol,
+			symbol: s.(*Stock).symbol,
 			price:  30.00,
 			min:    0.00,
 			max:    1.00,
@@ -80,7 +57,13 @@ func (m *Market) Prime() {
 }
 
 func (s *Stock) tickPrice() {
-	s.price = genNextPrice(s.price)
+	rnd := s.min + rand.Float64()*(s.max-s.min)
+	changePct := 2 * s.vol * rnd
+	if changePct > s.vol {
+		changePct -= (2 * s.vol)
+	}
+	changeAmt := s.price * changePct
+	s.price = s.price + changeAmt
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {

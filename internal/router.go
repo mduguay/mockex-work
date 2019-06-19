@@ -18,12 +18,12 @@ func (rtr *Router) HandleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/mockex", rtr.mockexStreamer)
 	myRouter.HandleFunc("/holdings/{uid}", rtr.holdingHandler)
-	myRouter.HandleFunc("/companies", rtr.companyHandler)
+	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 
-func (rtr *Router) companyHandler(w http.ResponseWriter, r *http.Request) {
-	cs := new(CompanyScanner)
+func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
+	cs := new(QuoteScanner)
 	companies := rtr.Storage.readMultiple(cs)
 	json.NewEncoder(w).Encode(companies)
 }

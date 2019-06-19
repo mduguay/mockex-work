@@ -8,6 +8,9 @@ INSERT INTO trade(trader_id, company_id, shares, price) VALUES (1, 1, 100, 134.6
 
 INSERT INTO price(company_id, price, stamp) VALUES (1, 11.34, NOW()), (2, 6.66, NOW());
 
+INSERT INTO stock(company_id, vol, minchange, maxchange) 
+VALUES (1, 0.02, 0.0, 1.0), (2, 0.03, 0.0, 1.2);
+
 SELECT t.email, c.symbol, h.shares
 FROM holding h
 LEFT JOIN company c
