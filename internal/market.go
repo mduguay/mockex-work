@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -62,27 +63,66 @@ func (s *Stock) tickPrice(p float64) float64 {
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {
-	qs := make([]*Quote, len(m.stocks))
+	quotemap := make(map[string]*Quote)
+
+	qscan := new(QuoteScanner)
+	quotes := m.Storage.readMultiple(qscan)
+	for _, q := range quotes {
+		quote, ok := q.(*Quote)
+		if !ok {
+			log.Println("Error casting quote")
+		}
+		quotemap[quote.Symbol] = quote
+	}
+
+	sscan := new(StockScanner)
+	stocks := m.Storage.readMultiple(sscan)
+
+	for _, s := range stocks {
+		stock, ok := s.(*Stock)
+		if !ok {
+			log.Println("Error casting stock")
+		}
+		stock.price = quotemap[stock.symbol].Price
+		go stock.startTick(rand.Intn(1500)+500, broadcast)
+	}
+
 	// Fetch quotes
 	// qs := new(QuoteScanner)
 	// quotes := m.Storage.readMultiple(qs)
 	// There's a 1:1 mapping between quotes (latest price) and stocks (metadata)
 	// How should these be linked
+	// for {
+	// 	time.Sleep(time.Second * 2)
+	// 	for i, s := range m.stocks {
+	// 		s.price = s.tickPrice(s.price)
+	// 		q := &Quote{
+	// 			Symbol: s.symbol,
+	// 			Price:  s.price,
+	// 		}
+	// 		qs[i] = q
+	// 	}
+	// 	qsb, err := json.Marshal(qs)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// 	broadcast <- qsb
+	// }
+}
+
+func (s *Stock) startTick(interval int, qPub chan []byte) {
 	for {
-		time.Sleep(time.Second * 2)
-		for i, s := range m.stocks {
-			s.price = s.tickPrice(s.price)
-			q := &Quote{
-				Symbol: s.symbol,
-				Price:  s.price,
-			}
-			qs[i] = q
+		// Use ticker instead of time.sleep
+		fmt.Println("interval:", interval)
+		time.Sleep(time.Duration(interval) * time.Millisecond)
+		s.price = s.tickPrice(s.price)
+		q := &Quote{
+			Symbol: s.symbol,
+			Price:  s.price,
 		}
-		qsb, err := json.Marshal(qs)
-		if err != nil {
-			log.Println(err)
-		}
-		broadcast <- qsb
+		qbytes, err := json.Marshal(q)
+		check(err)
+		qPub <- qbytes
 	}
 }
 
