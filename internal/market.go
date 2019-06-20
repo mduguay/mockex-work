@@ -40,14 +40,14 @@ type Market struct {
 // 	return prices
 // }
 
-func (s *Stock) tickPrice(p float64) float64 {
+func (s *Stock) tickPrice() {
 	rnd := s.min + rand.Float64()*(s.max-s.min)
 	changePct := 2 * s.vol * rnd
 	if changePct > s.vol {
 		changePct -= (2 * s.vol)
 	}
-	changeAmt := p * changePct
-	return p + changeAmt
+	changeAmt := s.price * changePct
+	s.price = s.price + changeAmt
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {
@@ -70,7 +70,7 @@ func (s *Stock) startTicking(qPub chan []byte) {
 	interval := rand.Intn(1500) + 500
 	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
 	for range ticker.C {
-		s.price = s.tickPrice(s.price)
+		s.tickPrice()
 		q := &Quote{
 			Symbol: s.symbol,
 			Price:  s.price,
