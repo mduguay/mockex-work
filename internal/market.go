@@ -1,24 +1,8 @@
 package internal
 
 import (
-	"encoding/json"
 	"log"
-	"math/rand"
-	"time"
 )
-
-type Quote struct {
-	Symbol string  `json:"symbol"`
-	Price  float64 `json:"price"`
-}
-
-type Stock struct {
-	symbol string
-	price  float64
-	min    float64
-	max    float64
-	vol    float64
-}
 
 type Holding struct {
 	Uid    int
@@ -29,25 +13,6 @@ type Holding struct {
 type Market struct {
 	stocks  []*Stock
 	Storage *Storage
-}
-
-// func getDayPrices() []float64 {
-// 	prices := make([]float64, 96)
-// 	prices[0] = start
-// 	for i := 1; i < 96; i++ {
-// 		prices[i] = genNextPrice(prices[i-1])
-// 	}
-// 	return prices
-// }
-
-func (s *Stock) tickPrice() {
-	rnd := s.min + rand.Float64()*(s.max-s.min)
-	changePct := 2 * s.vol * rnd
-	if changePct > s.vol {
-		changePct -= (2 * s.vol)
-	}
-	changeAmt := s.price * changePct
-	s.price = s.price + changeAmt
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {
@@ -63,21 +28,6 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 		}
 		stock.price = quotemap[stock.symbol].Price
 		go stock.startTicking(broadcast)
-	}
-}
-
-func (s *Stock) startTicking(qPub chan []byte) {
-	interval := rand.Intn(1500) + 500
-	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
-	for range ticker.C {
-		s.tickPrice()
-		q := &Quote{
-			Symbol: s.symbol,
-			Price:  s.price,
-		}
-		qbytes, err := json.Marshal(q)
-		check(err)
-		qPub <- qbytes
 	}
 }
 
