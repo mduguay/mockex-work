@@ -39,10 +39,17 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Write to db on every tick
-- Read One SQL
-- Make read multiple SQL async
-- Trade API
+- Write quotes to db on interval
+
+- Read One SQL - how important? What things to we read single? Is it really that much overhead?
+- Make read multiple SQL async - many calls to /Quotes. Stress test?
+
+- Holding API - Get
+- Trade API - Post
+
 - Seed historic info
 - Historic info API
+
 - Docker compose Postgres container
+
+- Heroku

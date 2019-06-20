@@ -4,12 +4,6 @@ import (
 	"log"
 )
 
-type Holding struct {
-	Uid    int
-	Symbol string
-	Shares int
-}
-
 type Market struct {
 	stocks  []*Stock
 	Storage *Storage
@@ -37,8 +31,8 @@ func (m *Market) getStartQuotes() map[string]*Quote {
 	quotes := m.Storage.readMultiple(qscan)
 	for _, q := range quotes {
 		quote, ok := q.(*Quote)
-		if !ok {
-			log.Println("Error casting quote")
+		if ok {
+			log.Println("Error casting quote:", q)
 		}
 		qm[quote.Symbol] = quote
 	}

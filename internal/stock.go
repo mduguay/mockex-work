@@ -20,7 +20,7 @@ type Stock struct {
 }
 
 func (s *Stock) startTicking(qPub chan []byte) {
-	interval := rand.Intn(1500) + 500
+	interval := rand.Intn(2000) + 750
 	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
 	for range ticker.C {
 		s.tickPrice()

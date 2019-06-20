@@ -10,6 +10,11 @@ type Scanner interface {
 	ScanRow(rows *sql.Rows) interface{}
 }
 
+type SingleScanner interface {
+	Query() string
+	ScanRow(row *sql.Row) interface{}
+}
+
 type QuoteScanner struct{}
 
 func (qs *QuoteScanner) Query() string {
@@ -70,4 +75,19 @@ func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
 	err := rows.Scan(&s.symbol, &s.price, &s.vol, &s.min, &s.max)
 	check(err)
 	return s
+}
+
+type TraderScanner struct {
+	id int
+}
+
+func (ts *TraderScanner) Query() string {
+	return fmt.Sprintf("select email from trader where id = %v", ts.id)
+}
+
+func (ss *TraderScanner) ScanRow(stmt *sql.Stmt) interface{} {
+	t := new(Trader)
+	err := stmt.QueryRow(ss.id).Scan(t.Email)
+	check(err)
+	return t
 }
