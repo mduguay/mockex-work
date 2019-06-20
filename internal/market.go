@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -74,7 +73,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 			log.Println("Error casting stock")
 		}
 		stock.price = quotemap[stock.symbol].Price
-		go stock.startTick(rand.Intn(1500)+500, broadcast)
+		go stock.startTicking(broadcast)
 	}
 
 	// Fetch quotes
@@ -100,11 +99,10 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 	// }
 }
 
-func (s *Stock) startTick(interval int, qPub chan []byte) {
-	for {
-		// Use ticker instead of time.sleep
-		fmt.Println("interval:", interval)
-		time.Sleep(time.Duration(interval) * time.Millisecond)
+func (s *Stock) startTicking(qPub chan []byte) {
+	interval := rand.Intn(1500) + 500
+	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
+	for range ticker.C {
 		s.price = s.tickPrice(s.price)
 		q := &Quote{
 			Symbol: s.symbol,
@@ -126,7 +124,6 @@ func (m *Market) getStartQuotes() map[string]*Quote {
 			log.Println("Error casting quote")
 		}
 		qm[quote.Symbol] = quote
-		log.Printf("Quote %v starting at %v", quote.Symbol, quote.Price)
 	}
 	return qm
 }
