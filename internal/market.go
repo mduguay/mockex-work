@@ -40,17 +40,6 @@ type Market struct {
 // 	return prices
 // }
 
-func (m *Market) Prime() {
-	ss := new(StockScanner)
-	stocks := m.Storage.readMultiple(ss)
-
-	m.stocks = make([]*Stock, len(stocks))
-
-	for i, s := range stocks {
-		m.stocks[i] = s.(*Stock)
-	}
-}
-
 func (s *Stock) tickPrice(p float64) float64 {
 	rnd := s.min + rand.Float64()*(s.max-s.min)
 	changePct := 2 * s.vol * rnd
@@ -75,28 +64,6 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 		stock.price = quotemap[stock.symbol].Price
 		go stock.startTicking(broadcast)
 	}
-
-	// Fetch quotes
-	// qs := new(QuoteScanner)
-	// quotes := m.Storage.readMultiple(qs)
-	// There's a 1:1 mapping between quotes (latest price) and stocks (metadata)
-	// How should these be linked
-	// for {
-	// 	time.Sleep(time.Second * 2)
-	// 	for i, s := range m.stocks {
-	// 		s.price = s.tickPrice(s.price)
-	// 		q := &Quote{
-	// 			Symbol: s.symbol,
-	// 			Price:  s.price,
-	// 		}
-	// 		qs[i] = q
-	// 	}
-	// 	qsb, err := json.Marshal(qs)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	}
-	// 	broadcast <- qsb
-	// }
 }
 
 func (s *Stock) startTicking(qPub chan []byte) {
@@ -127,8 +94,3 @@ func (m *Market) getStartQuotes() map[string]*Quote {
 	}
 	return qm
 }
-
-// func generateHistoricData() {
-// 	p := getDayPrices()
-// 	//insert into db
-// }
