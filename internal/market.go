@@ -63,17 +63,7 @@ func (s *Stock) tickPrice(p float64) float64 {
 }
 
 func (m *Market) OpeningBell(broadcast chan []byte) {
-	quotemap := make(map[string]*Quote)
-
-	qscan := new(QuoteScanner)
-	quotes := m.Storage.readMultiple(qscan)
-	for _, q := range quotes {
-		quote, ok := q.(*Quote)
-		if !ok {
-			log.Println("Error casting quote")
-		}
-		quotemap[quote.Symbol] = quote
-	}
+	quotemap := m.getStartQuotes()
 
 	sscan := new(StockScanner)
 	stocks := m.Storage.readMultiple(sscan)
@@ -124,6 +114,21 @@ func (s *Stock) startTick(interval int, qPub chan []byte) {
 		check(err)
 		qPub <- qbytes
 	}
+}
+
+func (m *Market) getStartQuotes() map[string]*Quote {
+	qm := make(map[string]*Quote)
+	qscan := new(QuoteScanner)
+	quotes := m.Storage.readMultiple(qscan)
+	for _, q := range quotes {
+		quote, ok := q.(*Quote)
+		if !ok {
+			log.Println("Error casting quote")
+		}
+		qm[quote.Symbol] = quote
+		log.Printf("Quote %v starting at %v", quote.Symbol, quote.Price)
+	}
+	return qm
 }
 
 // func generateHistoricData() {
