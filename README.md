@@ -39,13 +39,10 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Create transaction wrapper for complex createTrade()
-
-- Read One SQL - Trader, Holding
-
-- Holding API - Get
+- Postman for all endpoints
 
 - Make read multiple SQL async - Stress test
+- Transaction wrapper for CreateTrade
 
 - Write quotes to db on interval
 

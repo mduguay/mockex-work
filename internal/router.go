@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -40,9 +41,14 @@ func (rtr *Router) holdingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rtr *Router) traderHandler(w http.ResponseWriter, r *http.Request) {
-	result := make(chan string)
-	go rtr.Storage.readTrader(1, result)
-	fmt.Println(<-result)
+	vars := mux.Vars(r)
+	key := vars["tid"]
+	tid, err := strconv.Atoi(key)
+	if check(err) {
+		return
+	}
+	t := rtr.Storage.readTrader(tid)
+	json.NewEncoder(w).Encode(t)
 }
 
 func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {

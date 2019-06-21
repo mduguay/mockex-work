@@ -37,14 +37,16 @@ func (s *Storage) Disconnect() {
 	s.db.Close()
 }
 
-func (s *Storage) readTrader(id int, result chan string) {
+func (s *Storage) readTrader(id int) Trader {
 	stmt, err := s.db.Prepare("select email from trader where id = $1")
 	check(err)
 	defer stmt.Close()
-	var name string
-	err = stmt.QueryRow(id).Scan(&name)
+	t := Trader{
+		Id: id,
+	}
+	err = stmt.QueryRow(id).Scan(&t.Email)
 	check(err)
-	result <- name
+	return t
 }
 
 func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
