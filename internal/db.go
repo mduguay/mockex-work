@@ -3,17 +3,17 @@ package internal
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/lib/pq"
 )
 
 const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "postgres64"
-	dbname   = "mockex"
+	connstring = "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
+	host       = "localhost"
+	port       = 5432
+	user       = "postgres"
+	password   = "postgres64"
+	dbname     = "mockex"
 )
 
 type Storage struct {
@@ -22,17 +22,11 @@ type Storage struct {
 
 func (s *Storage) Connect() {
 	fmt.Println("Connecting")
-	conString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	conString := fmt.Sprintf(connstring, host, port, user, password, dbname)
 	db, err := sql.Open("postgres", conString)
-	if err != nil {
-		log.Println(err)
-	}
-
+	check(err)
 	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
+	check(err)
 	s.db = db
 }
 
@@ -40,11 +34,6 @@ func (s *Storage) Disconnect() {
 	fmt.Println("Disconnecting")
 	s.db.Close()
 }
-
-var (
-	id   int
-	name string
-)
 
 func (s *Storage) readTrader(id int, result chan string) {
 	fmt.Println("Preparing")
@@ -71,8 +60,16 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 		item := scanner.ScanRow(rows)
 		items = append(items, item)
 	}
-	if err = rows.Err(); err != nil {
-		check(err)
-	}
+	err = rows.Err()
+	check(err)
 	return
+}
+
+func (s *Storage) createTrade(t Trade) {
+	// Create trade
+	stmt, err := s.db.Prepare("INSERT INTO trade(trader_id, company_id, direction, shares, price) VALUES($1, $2, $3, $4, $5)")
+	check(err)
+	res, err := stmt.Exec(t.Tid, t.Sid, t.Direction, t.Shares, t.Price)
+	fmt.Printf("%+v", res)
+	// Update holding
 }

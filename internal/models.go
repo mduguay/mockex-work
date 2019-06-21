@@ -14,7 +14,7 @@ type Trader struct {
 type Trade struct {
 	Tid       int     `json:"tid"`
 	Sid       int     `json:"sid"`
-	Amount    int     `json:"amount"`
-	Direction string  `json:"direction"`
+	Shares    int     `json:"shares"`
+	Direction bool    `json:"direction"`
 	Price     float64 `json:"price"`
 }

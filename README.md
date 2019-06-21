@@ -39,13 +39,16 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Write quotes to db on interval
-
-- Read One SQL - how important? What things to we read single? Is it really that much overhead?
-- Make read multiple SQL async - many calls to /Quotes. Stress test?
-
-- Holding API - Get
 - Trade API - Post
+
+- Read One SQL - Trader, Holding
+- Holding API - Get
+
+- Merge company and stock
+
+- Make read multiple SQL async - Stress test
+
+- Write quotes to db on interval
 
 - Seed historic info
 - Historic info API

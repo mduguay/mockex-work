@@ -17,7 +17,8 @@ type Router struct {
 func (rtr *Router) HandleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/mockex", rtr.mockexStreamer)
-	myRouter.HandleFunc("/holdings/{uid}", rtr.holdingHandler)
+	myRouter.HandleFunc("/trader/{tid}", rtr.traderHandler)
+	myRouter.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
 	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
 	myRouter.HandleFunc("/trade", rtr.tradeHandler)
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
@@ -31,7 +32,7 @@ func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (rtr *Router) holdingHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	key := vars["uid"]
+	key := vars["tid"]
 	hs := new(HoldingScanner)
 	hs.uid = key
 	holdings := rtr.Storage.readMultiple(hs)
@@ -52,6 +53,7 @@ func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
 	check(err)
 	fmt.Println(t)
 	// publish trade to db
+	rtr.Storage.createTrade(t)
 	// update holding
 	// return holding
 }
