@@ -1,6 +1,6 @@
 package internal
 
-import "fmt"
+import "log"
 
 type Hub struct {
 	clients    map[*Client]bool
@@ -10,7 +10,7 @@ type Hub struct {
 }
 
 func NewHub() *Hub {
-	fmt.Println("Hub: Creating new hub")
+	log.Println("Hub: Creating new hub")
 	return &Hub{
 		Broadcast:  make(chan []byte),
 		register:   make(chan *Client),
@@ -20,15 +20,15 @@ func NewHub() *Hub {
 }
 
 func (h *Hub) Run() {
-	fmt.Println("Hub: Running...")
+	log.Println("Hub: Running...")
 	for {
 		select {
 		case client := <-h.register:
-			fmt.Println("Hub: Registering connection")
+			log.Println("Hub: Registering connection")
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
-				fmt.Println("Hub: Unregistering connection")
+				log.Println("Hub: Unregistering connection")
 				delete(h.clients, client)
 				close(client.send)
 			}
@@ -36,9 +36,9 @@ func (h *Hub) Run() {
 			for client := range h.clients {
 				select {
 				case client.send <- message:
-					fmt.Println("Hub: Sent message")
+					log.Println("Hub: Sent message")
 				default:
-					fmt.Println("Hub: Closing connection")
+					log.Println("Hub: Closing connection")
 					close(client.send)
 					delete(h.clients, client)
 				}

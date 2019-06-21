@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -21,26 +20,26 @@ type Client struct {
 
 func (c *Client) writePump() {
 	defer func() {
-		fmt.Println("Client: Closing connection")
+		log.Println("Client: Closing connection")
 		c.conn.Close()
 	}()
 	for {
 		select {
 		case message, ok := <-c.send:
 			if !ok {
-				fmt.Println("Client: The hub closed the channel")
+				log.Println("Client: The hub closed the channel")
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			}
 			w, err := c.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
 			}
-			fmt.Println("Client: Writing message to w")
+			log.Println("Client: Writing message to w")
 			w.Write(message)
 
-			fmt.Println("Client: Closing w")
+			log.Println("Client: Closing w")
 			if err := w.Close(); err != nil {
-				fmt.Println("Client: Err != on w.Close()")
+				log.Println("Client: Err != on w.Close()")
 				c.hub.unregister <- c
 				return
 			}

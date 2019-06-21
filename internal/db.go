@@ -44,7 +44,6 @@ func (s *Storage) readTrader(id int, result chan string) {
 	var name string
 	err = stmt.QueryRow(id).Scan(&name)
 	check(err)
-	fmt.Println(name)
 	result <- name
 }
 
