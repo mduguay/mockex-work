@@ -49,6 +49,8 @@ wscat -c ws://localhost:8080/mockex
 - Seed historic info
 - Historic info API
 
+- Login
+
 - Docker compose Postgres container
 
 - Heroku

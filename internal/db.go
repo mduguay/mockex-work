@@ -4,17 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
 const (
-	connstring = "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
-	host       = "localhost"
-	port       = 5432
-	user       = "postgres"
-	password   = "postgres64"
-	dbname     = "mockex"
+	connstring = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable"
 )
 
 type Storage struct {
@@ -22,8 +18,9 @@ type Storage struct {
 }
 
 func (s *Storage) Connect() {
+	env := getEnv()
 	log.Println("DB: Connecting")
-	conString := fmt.Sprintf(connstring, host, port, user, password, dbname)
+	conString := fmt.Sprintf(connstring, env["host"], env["port"], env["user"], env["pass"], env["name"])
 	db, err := sql.Open("postgres", conString)
 	check(err)
 	err = db.Ping()
@@ -35,6 +32,17 @@ func (s *Storage) Connect() {
 func (s *Storage) Disconnect() {
 	log.Println("DB: Disconnecting")
 	s.db.Close()
+}
+
+func getEnv() map[string]string {
+	env := make(map[string]string)
+	env["host"] = os.Getenv("DB_HOST")
+	env["port"] = os.Getenv("DB_PORT")
+	env["user"] = os.Getenv("DB_USER")
+	env["pass"] = os.Getenv("DB_PASS")
+	env["name"] = os.Getenv("DB_NAME")
+	fmt.Printf("%+v", env)
+	return env
 }
 
 func (s *Storage) readTrader(id int) Trader {
