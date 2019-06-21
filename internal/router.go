@@ -19,6 +19,7 @@ func (rtr *Router) HandleRequests() {
 	myRouter.HandleFunc("/mockex", rtr.mockexStreamer)
 	myRouter.HandleFunc("/holdings/{uid}", rtr.holdingHandler)
 	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
+	myRouter.HandleFunc("/trade", rtr.tradeHandler)
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 
@@ -41,6 +42,18 @@ func (rtr *Router) traderHandler(w http.ResponseWriter, r *http.Request) {
 	result := make(chan string)
 	go rtr.Storage.readTrader(1, result)
 	fmt.Println(<-result)
+}
+
+func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
+	// request is post with tid, symbol, amount, direction, price
+	decoder := json.NewDecoder(r.Body)
+	var t Trade
+	err := decoder.Decode(&t)
+	check(err)
+	fmt.Println(t)
+	// publish trade to db
+	// update holding
+	// return holding
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {
