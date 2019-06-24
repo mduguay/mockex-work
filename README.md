@@ -39,12 +39,10 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Postman for all endpoints
+- Write quotes to db on interval
 
 - Make read multiple SQL async - Stress test
 - Transaction wrapper for CreateTrade
-
-- Write quotes to db on interval
 
 - Seed historic info
 - Historic info API

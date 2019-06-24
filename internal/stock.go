@@ -19,10 +19,10 @@ type Stock struct {
 	vol    float64
 }
 
-func (s *Stock) startTicking(qPub chan []byte) {
-	interval := rand.Intn(2000) + 750
-	ticker := time.NewTicker(time.Duration(interval) * time.Millisecond)
-	for range ticker.C {
+func (s *Stock) generateTicks(qPub chan []byte) {
+	for {
+		interval := rand.Intn(2000) + 750
+		time.Sleep(time.Duration(interval) * time.Millisecond)
 		s.tickPrice()
 		q := &Quote{
 			Symbol: s.symbol,

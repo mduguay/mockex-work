@@ -21,7 +21,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 			log.Println("Error casting stock")
 		}
 		stock.price = quotemap[stock.symbol].Price
-		go stock.startTicking(broadcast)
+		go stock.generateTicks(broadcast)
 	}
 }
 
