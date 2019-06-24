@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"encoding/json"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -19,7 +19,7 @@ type Stock struct {
 	vol    float64
 }
 
-func (s *Stock) generateTicks(qPub chan []byte) {
+func (s *Stock) generateTicks(qPub chan *Quote) {
 	for {
 		interval := rand.Intn(2000) + 750
 		time.Sleep(time.Duration(interval) * time.Millisecond)
@@ -28,9 +28,7 @@ func (s *Stock) generateTicks(qPub chan []byte) {
 			Symbol: s.symbol,
 			Price:  s.price,
 		}
-		qbytes, err := json.Marshal(q)
-		check(err)
-		qPub <- qbytes
+		qPub <- q
 	}
 }
 
@@ -41,5 +39,7 @@ func (s *Stock) tickPrice() {
 		changePct -= (2 * s.vol)
 	}
 	changeAmt := s.price * changePct
-	s.price = s.price + changeAmt
+	newPrice := s.price + changeAmt
+	rPrice := math.Round(newPrice*100) / 100
+	s.price = rPrice
 }

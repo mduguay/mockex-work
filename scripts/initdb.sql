@@ -26,14 +26,14 @@ CREATE TABLE trade (
   price NUMERIC(9, 2)
 );
 
-CREATE TABLE price (
+CREATE TABLE quote (
   id SERIAL PRIMARY KEY,
   company_id INT REFERENCES company(id),
   price NUMERIC(9, 2),
   stamp TIMESTAMP
 );
 
-CREATE INDEX idx_price_company ON price(company_id)
+CREATE INDEX idx_quote_company ON quote(company_id)
 
 CREATE TABLE stock (
   id SERIAL PRIMARY KEY,
