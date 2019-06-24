@@ -19,17 +19,17 @@ type QuoteScanner struct{}
 
 func (qs *QuoteScanner) Query() string {
 	return `
-		select c.symbol, p.price lastprice
-		from price p
+		select c.symbol, q.price lastprice
+		from quote q
 		right join (
 			select company_id cid, max(stamp) ms
-			from price
+			from quote
 			group by company_id
 			) laststamp
-		on p.stamp = laststamp.ms
-		and p.company_id = laststamp.cid
+		on q.stamp = laststamp.ms
+		and q.company_id = laststamp.cid
 		left join company c
-		on c.id = p.company_id;
+		on c.id = q.company_id;
 		`
 }
 

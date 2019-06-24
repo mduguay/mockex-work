@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -129,5 +130,24 @@ func (s *Storage) createTrade(t Trade) {
 	if check(err) {
 		tx.Rollback()
 		return
+	}
+}
+
+func (s *Storage) createQuote(q *Quote) {
+	var id int
+	{
+		stmt, err := s.db.Prepare("SELECT id FROM company WHERE symbol = $1")
+		check(err)
+		defer stmt.Close()
+		stmt.QueryRow(q.Symbol).Scan(&id)
+	}
+	{
+		fmt.Println("INSERTING quote")
+		istmt, err := s.db.Prepare("INSERT INTO quote (company_id, price, stamp) VALUES ($1, $2, $3)")
+		check(err)
+		defer istmt.Close()
+		res, err := istmt.Exec(id, q.Price, time.Now())
+		log.Println(res)
+		check(err)
 	}
 }

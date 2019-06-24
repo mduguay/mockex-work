@@ -41,6 +41,8 @@ wscat -c ws://localhost:8080/mockex
 
 - Write quotes to db on interval
 
+- Objects should have Ids
+
 - Make read multiple SQL async - Stress test
 - Transaction wrapper for CreateTrade
 

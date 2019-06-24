@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
@@ -23,11 +24,13 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 		if !ok {
 			log.Println("Error casting stock")
 		}
+		fmt.Println(quotemap[stock.symbol])
 		stock.price = quotemap[stock.symbol].Price
 		go stock.generateTicks(stocktick)
 	}
 
 	for quote := range stocktick {
+		m.Storage.createQuote(quote)
 		qbytes, err := json.Marshal(quote)
 		check(err)
 		broadcast <- qbytes

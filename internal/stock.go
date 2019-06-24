@@ -22,6 +22,7 @@ type Stock struct {
 func (s *Stock) generateTicks(qPub chan *Quote) {
 	for {
 		interval := rand.Intn(2000) + 750
+		//interval := 0
 		time.Sleep(time.Duration(interval) * time.Millisecond)
 		s.tickPrice()
 		q := &Quote{
