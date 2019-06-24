@@ -39,9 +39,9 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
-- Write quotes to db on interval
+- Avoid select when saving quote
 
-- Objects should have Ids
+- Start and stop market via API
 
 - Make read multiple SQL async - Stress test
 - Transaction wrapper for CreateTrade

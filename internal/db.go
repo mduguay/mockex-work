@@ -77,21 +77,18 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 func (s *Storage) createTrade(t Trade) {
 	var shares int
 	tx, err := s.db.Begin()
-	if check(err) {
-		tx.Rollback()
+	if checktx(err, tx) {
 		return
 	}
 	{
 		stmt, err := tx.Prepare("SELECT shares FROM holding WHERE company_id = $1 AND trader_id = $2")
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 		defer stmt.Close()
 
 		err = stmt.QueryRow(t.Cid, t.Tid).Scan(&shares)
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 	}
@@ -101,53 +98,71 @@ func (s *Storage) createTrade(t Trade) {
 	}
 	{
 		stmt, err := tx.Prepare("INSERT INTO trade(trader_id, company_id, direction, shares, price) VALUES($1, $2, $3, $4, $5)")
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(t.Tid, t.Cid, t.Direction, t.Shares, t.Price)
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 	}
 	shares += t.Shares
 	{
 		stmt, err := tx.Prepare("UPDATE holding SET shares = $1 WHERE trader_id = $2 AND company_id = $3")
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(shares, t.Tid, t.Cid)
-		if check(err) {
-			tx.Rollback()
+		if checktx(err, tx) {
 			return
 		}
 	}
 	err = tx.Commit()
-	if check(err) {
-		tx.Rollback()
+	if checktx(err, tx) {
 		return
 	}
 }
 
 func (s *Storage) createQuote(q *Quote) {
 	var id int
+	tx, err := s.db.Begin()
+	if checktx(err, tx) {
+		return
+	}
 	{
-		stmt, err := s.db.Prepare("SELECT id FROM company WHERE symbol = $1")
-		check(err)
+		stmt, err := tx.Prepare("SELECT id FROM company WHERE symbol = $1")
+		if checktx(err, tx) {
+			return
+		}
 		defer stmt.Close()
-		stmt.QueryRow(q.Symbol).Scan(&id)
+		err = stmt.QueryRow(q.Symbol).Scan(&id)
+		if checktx(err, tx) {
+			return
+		}
 	}
 	{
-		fmt.Println("INSERTING quote")
-		istmt, err := s.db.Prepare("INSERT INTO quote (company_id, price, stamp) VALUES ($1, $2, $3)")
-		check(err)
+		istmt, err := tx.Prepare("INSERT INTO quote (company_id, price, stamp) VALUES ($1, $2, $3)")
+		if checktx(err, tx) {
+			return
+		}
 		defer istmt.Close()
-		res, err := istmt.Exec(id, q.Price, time.Now())
-		log.Println(res)
-		check(err)
+		_, err = istmt.Exec(id, q.Price, time.Now())
+		if checktx(err, tx) {
+			return
+		}
 	}
+	err = tx.Commit()
+	if checktx(err, tx) {
+		return
+	}
+}
+
+func checktx(err error, tx *sql.Tx) bool {
+	if check(err) {
+		tx.Rollback()
+		return true
+	}
+	return false
 }
