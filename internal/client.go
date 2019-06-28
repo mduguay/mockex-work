@@ -20,26 +20,21 @@ type Client struct {
 
 func (c *Client) writePump() {
 	defer func() {
-		log.Println("Client: Closing connection")
 		c.conn.Close()
 	}()
 	for {
 		select {
 		case message, ok := <-c.send:
 			if !ok {
-				log.Println("Client: The hub closed the channel")
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			}
 			w, err := c.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
 			}
-			log.Println("Client: Writing message to w")
 			w.Write(message)
 
-			log.Println("Client: Closing w")
 			if err := w.Close(); err != nil {
-				log.Println("Client: Err != on w.Close()")
 				c.hub.unregister <- c
 				return
 			}

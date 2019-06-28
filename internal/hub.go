@@ -36,7 +36,6 @@ func (h *Hub) Run() {
 			for client := range h.clients {
 				select {
 				case client.send <- message:
-					log.Println("Hub: Sent message")
 				default:
 					log.Println("Hub: Closing connection")
 					close(client.send)

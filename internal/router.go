@@ -52,16 +52,12 @@ func (rtr *Router) traderHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
-	// request is post with tid, symbol, amount, direction, price
 	decoder := json.NewDecoder(r.Body)
 	var t Trade
 	err := decoder.Decode(&t)
 	check(err)
 	fmt.Println(t)
-	// publish trade to db
 	rtr.Storage.createTrade(t)
-	// update holding
-	// return holding
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {
