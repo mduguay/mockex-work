@@ -6,8 +6,6 @@ This service will stream the prices, and provide REST endpoints for user, portfo
 
 The web socket streams from `:8080/mockex`
 
-The client that subscribes to this service can be found here: [Mock Exchange Blotter](https://git.csnzoo.com/mduguay/mockex-blotter)
-
 ## To run
 
 Postgres
@@ -42,6 +40,7 @@ wscat -c ws://localhost:8080/mockex
 - Avoid select when saving quote
 
 - Start and stop market via API
+ - A kill signal needs to be sent to all stocks
 
 - Make read multiple SQL async - Stress test
 - Transaction wrapper for CreateTrade

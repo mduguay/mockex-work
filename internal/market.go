@@ -22,7 +22,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 	for _, s := range stocks {
 		stock, ok := s.(*Stock)
 		if !ok {
-			log.Println("Error casting stock")
+			log.Println("Error casting stock:", s)
 		}
 		fmt.Println(quotemap[stock.symbol])
 		stock.price = quotemap[stock.symbol].Price

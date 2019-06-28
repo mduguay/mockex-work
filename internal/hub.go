@@ -28,7 +28,7 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
-				log.Println("Hub: Unregistering connection")
+				log.Println("Hub: Closing connection")
 				delete(h.clients, client)
 				close(client.send)
 			}
@@ -37,7 +37,8 @@ func (h *Hub) Run() {
 				select {
 				case client.send <- message:
 				default:
-					log.Println("Hub: Closing connection")
+					// In what case does this get hit?
+					log.Println("Hub: Closing connection on Broadcast")
 					close(client.send)
 					delete(h.clients, client)
 				}

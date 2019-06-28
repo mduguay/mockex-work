@@ -42,7 +42,6 @@ func getEnv() map[string]string {
 	env["user"] = os.Getenv("DB_USER")
 	env["pass"] = os.Getenv("DB_PASS")
 	env["name"] = os.Getenv("DB_NAME")
-	fmt.Printf("%+v", env)
 	return env
 }
 
