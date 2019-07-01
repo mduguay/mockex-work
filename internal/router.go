@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -22,7 +23,8 @@ func (rtr *Router) HandleRequests() {
 	myRouter.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
 	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
 	myRouter.HandleFunc("/trade", rtr.tradeHandler)
-	log.Fatal(http.ListenAndServe(":8080", myRouter))
+	corsObj := handlers.AllowedOrigins([]string{"*"})
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(corsObj)(myRouter)))
 }
 
 func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
