@@ -18,6 +18,7 @@ type Router struct {
 
 func (rtr *Router) HandleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/login", rtr.loginHandler)
 	myRouter.HandleFunc("/mockex", rtr.mockexStreamer)
 	myRouter.HandleFunc("/trader/{tid}", rtr.traderHandler)
 	myRouter.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
@@ -27,6 +28,10 @@ func (rtr *Router) HandleRequests() {
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(corsObj)(myRouter)))
 }
 
+func (rtr *Router) loginHandler(w http.ResponseWriter, r *http.Request) {
+	t := rtr.Storage.readTrader(1)
+	json.NewEncoder(w).Encode(t)
+}
 func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
 	cs := new(QuoteScanner)
 	companies := rtr.Storage.readMultiple(cs)
