@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type Router struct {
@@ -23,9 +24,21 @@ func (rtr *Router) HandleRequests() {
 	myRouter.HandleFunc("/trader/{tid}", rtr.traderHandler)
 	myRouter.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
 	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
-	myRouter.HandleFunc("/trade", rtr.tradeHandler)
-	corsObj := handlers.AllowedOrigins([]string{"*"})
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(corsObj)(myRouter)))
+	myRouter.HandleFunc("/trade", rtr.tradeHandler).Methods("POST")
+	// corsObj := handlers.AllowedOrigins([]string{"*"})
+	// corsMethods := handlers.AllowedMethods([]string{"*"})
+
+	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	// originsOk := handlers.AllowedOrigins([]string{"*"})
+	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(myRouter)
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handler))
 }
 
 func (rtr *Router) loginHandler(w http.ResponseWriter, r *http.Request) {

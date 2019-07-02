@@ -37,7 +37,10 @@ wscat -c ws://localhost:8080/mockex
 
 ## Future
 
+- handle incorrect or undefined tid in /holdings handler
+
 - Avoid select when saving quote
+- This will be handled when the client sends the id instead of symbol
 
 - Start and stop market via API
  - A kill signal needs to be sent to all stocks
