@@ -18,26 +18,18 @@ type Router struct {
 }
 
 func (rtr *Router) HandleRequests() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/login", rtr.loginHandler)
-	myRouter.HandleFunc("/mockex", rtr.mockexStreamer)
-	myRouter.HandleFunc("/trader/{tid}", rtr.traderHandler)
-	myRouter.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
-	myRouter.HandleFunc("/quotes", rtr.quoteHandler)
-	myRouter.HandleFunc("/trade", rtr.tradeHandler).Methods("POST")
-	// corsObj := handlers.AllowedOrigins([]string{"*"})
-	// corsMethods := handlers.AllowedMethods([]string{"*"})
-
-	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	// originsOk := handlers.AllowedOrigins([]string{"*"})
-	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/login", rtr.loginHandler)
+	router.HandleFunc("/mockex", rtr.mockexStreamer)
+	router.HandleFunc("/trader/{tid}", rtr.traderHandler)
+	router.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
+	router.HandleFunc("/quotes", rtr.quoteHandler)
+	router.HandleFunc("/trade", rtr.tradeHandler).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
 		AllowCredentials: true,
 	})
-
-	handler := c.Handler(myRouter)
+	handler := c.Handler(router)
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handler))
 }
 
@@ -77,7 +69,9 @@ func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&t)
 	check(err)
 	fmt.Println(t)
-	rtr.Storage.createTrade(t)
+	shares, err := rtr.Storage.createTrade(t)
+	check(err)
+	json.NewEncoder(w).Encode(shares)
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {

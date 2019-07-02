@@ -2,6 +2,7 @@ package internal
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -73,55 +74,56 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	return
 }
 
-func (s *Storage) createTrade(t Trade) {
+func (s *Storage) createTrade(t Trade) (int, error) {
 	var shares int
 	tx, err := s.db.Begin()
 	if checktx(err, tx) {
-		return
+		return 0, err
 	}
 	{
 		stmt, err := tx.Prepare("SELECT shares FROM holding WHERE company_id = $1 AND trader_id = $2")
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 		defer stmt.Close()
 
 		err = stmt.QueryRow(t.Cid, t.Tid).Scan(&shares)
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 	}
 	if shares+t.Shares < 0 {
 		tx.Rollback()
-		return
+		return 0, errors.New("Not enough shares to sell")
 	}
 	{
 		stmt, err := tx.Prepare("INSERT INTO trade(trader_id, company_id, direction, shares, price) VALUES($1, $2, $3, $4, $5)")
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(t.Tid, t.Cid, t.Direction, t.Shares, t.Price)
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 	}
 	shares += t.Shares
 	{
 		stmt, err := tx.Prepare("UPDATE holding SET shares = $1 WHERE trader_id = $2 AND company_id = $3")
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(shares, t.Tid, t.Cid)
 		if checktx(err, tx) {
-			return
+			return 0, err
 		}
 	}
 	err = tx.Commit()
 	if checktx(err, tx) {
-		return
+		return 0, err
 	}
+	return shares, nil
 }
 
 func (s *Storage) createQuote(q *Quote) {
