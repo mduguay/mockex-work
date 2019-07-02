@@ -19,7 +19,7 @@ type QuoteScanner struct{}
 
 func (qs *QuoteScanner) Query() string {
 	return `
-		select c.symbol, q.price lastprice
+		select c.id, c.symbol, q.price lastprice
 		from quote q
 		right join (
 			select company_id cid, max(stamp) ms
@@ -35,7 +35,7 @@ func (qs *QuoteScanner) Query() string {
 
 func (qs *QuoteScanner) ScanRow(rows *sql.Rows) interface{} {
 	q := new(Quote)
-	err := rows.Scan(&q.Symbol, &q.Price)
+	err := rows.Scan(&q.Cid, &q.Symbol, &q.Price)
 	check(err)
 	return q
 }
