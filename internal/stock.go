@@ -7,11 +7,13 @@ import (
 )
 
 type Quote struct {
+	Cid    int     `json:"cid"`
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
 }
 
 type Stock struct {
+	cid    int
 	symbol string
 	price  float64
 	min    float64
@@ -26,6 +28,7 @@ func (s *Stock) generateTicks(qPub chan *Quote) {
 		time.Sleep(time.Duration(interval) * time.Millisecond)
 		s.tickPrice()
 		q := &Quote{
+			Cid:    s.cid,
 			Symbol: s.symbol,
 			Price:  s.price,
 		}
