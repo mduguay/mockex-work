@@ -54,7 +54,7 @@ func (hs *HoldingScanner) Query() string {
 
 func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	h := new(Holding)
-	err := rows.Scan(&h.Uid, &h.Symbol, &h.Shares)
+	err := rows.Scan(&h.Tid, &h.Symbol, &h.Shares)
 	check(err)
 	return h
 }

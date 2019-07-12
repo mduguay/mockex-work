@@ -10,7 +10,7 @@ This is a prime example of goroutines in generating stock prices. Postgres is us
 
 ## To run
 
-Postgres
+### Postgres
 ```
 pg_ctl -D /usr/local/var/postgres start
 psql -U postgres
@@ -25,12 +25,26 @@ To setup the db for the first time (from within psql)
 \i scripts/seed.sql
 ```
 
+---
+
+### Environment variables
+
+When running, the enironment variables in the `.env` file need to be set. Running in vscode does this automatically.
+
+---
+
+### Run the server
+
 Go - run the main application
 ```
 go run cmd/mockex/main.go
 ```
 
 Or, if you're using vscode (highly recommended), just hit `F5`
+
+---
+
+### Test the API
 
 Listen to the feed
 ```
@@ -43,15 +57,21 @@ Get stock info
 curl http://localhost:8080/quotes
 ```
 
-Postman
+---
 
-Open up Postman, click "Import" in the top left, then point it to the Mockex.postman_collection.json file
+### Using Postman
 
-Docker
+Open up Postman, click "Import" in the top left, then point it to the `Mockex.postman_collection.json` file
+
+---
+
+### Docker
 ```
 docker build -t mock-exchange .
 docker run -p 8080:8080 -d mock-exchange
 ```
+
+---
 
 ## Future
 

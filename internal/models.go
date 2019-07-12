@@ -1,14 +1,14 @@
 package internal
 
 type Holding struct {
-	Uid    int
-	Symbol string
-	Shares int
+	Tid    int    `json:"tid"`
+	Symbol string `json:"symbol"`
+	Shares int    `json:"shares"`
 }
 
 type Trader struct {
-	Id    int
-	Email string
+	Id    int    `json:"id"`
+	Email string `json:"email"`
 }
 
 type Trade struct {
