@@ -46,7 +46,7 @@ type HoldingScanner struct {
 
 func (hs *HoldingScanner) Query() string {
 	return fmt.Sprintf(`
-		select h.trader_id, c.symbol, h.shares
+		select h.trader_id, c.id, c.symbol, h.shares
 		from holding h
 		left join company c on h.company_id = c.id
 		where h.trader_id = %v`, hs.uid)
@@ -54,7 +54,7 @@ func (hs *HoldingScanner) Query() string {
 
 func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	h := new(Holding)
-	err := rows.Scan(&h.Tid, &h.Symbol, &h.Shares)
+	err := rows.Scan(&h.Tid, &h.Cid, &h.Symbol, &h.Shares)
 	check(err)
 	return h
 }

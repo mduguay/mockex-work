@@ -2,6 +2,7 @@ package internal
 
 type Holding struct {
 	Tid    int    `json:"tid"`
+	Cid    int    `json:"cid"`
 	Symbol string `json:"symbol"`
 	Shares int    `json:"shares"`
 }
