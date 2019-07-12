@@ -6,6 +6,8 @@ This service will stream the prices, and provide REST endpoints for user, portfo
 
 The web socket streams from `:8080/mockex`
 
+This is a prime example of goroutines in generating stock prices. Postgres is used in the back end for a datastore.
+
 ## To run
 
 Postgres
@@ -13,21 +15,22 @@ Postgres
 pg_ctl -D /usr/local/var/postgres start
 psql -U postgres
 \c mockex
-\i scripts/initdb.sql
 \dt
 \d holding
 ```
 
-Go
+To setup the db for the first time (from within psql)
+```
+\i scripts/initdb.sql
+\i scripts/seed.sql
+```
+
+Go - run the main application
 ```
 go run cmd/mockex/main.go
 ```
 
-Docker
-```
-docker build -t mock-exchange .
-docker run -p 8080:8080 -d mock-exchange
-```
+Or, if you're using vscode (highly recommended), just hit `F5`
 
 Listen to the feed
 ```
@@ -35,15 +38,34 @@ npm install -g wscat
 wscat -c ws://localhost:8080/mockex
 ```
 
+Get stock info
+```
+curl http://localhost:8080/quotes
+```
+
+Postman
+
+Open up Postman, click "Import" in the top left, then point it to the Mockex.postman_collection.json file
+
+Docker
+```
+docker build -t mock-exchange .
+docker run -p 8080:8080 -d mock-exchange
+```
+
 ## Future
+
+- positive shares is a buy, negative shares is a sell
 
 - handle incorrect or undefined tid in /holdings handler
 
 - Avoid select when saving quote
 - This will be handled when the client sends the id instead of symbol
 
+- Docker compose Postgres container
+
 - Start and stop market via API
- - A kill signal needs to be sent to all stocks
+- A kill signal needs to be sent to all stocks
 
 - Make read multiple SQL async - Stress test
 - Transaction wrapper for CreateTrade
@@ -52,7 +74,5 @@ wscat -c ws://localhost:8080/mockex
 - Historic info API
 
 - Login
-
-- Docker compose Postgres container
 
 - Heroku

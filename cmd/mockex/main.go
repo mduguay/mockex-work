@@ -4,13 +4,12 @@ import (
 	"log"
 
 	"git.csnzoo.com/mduguay/mockex/internal"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalln("Failed to load environment variables:", err)
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Fatalln("Failed to load environment variables:", err)
+	// }
 
 	log.Println("Init: Storage")
 	sto := new(internal.Storage)
