@@ -13,14 +13,18 @@ type Trader struct {
 }
 
 type Trade struct {
-	Tid       int     `json:"tid"`
-	Cid       int     `json:"cid"`
-	Shares    int     `json:"shares"`
-	Direction bool    `json:"direction"`
-	Price     float64 `json:"price"`
+	Tid    int     `json:"tid"`
+	Cid    int     `json:"cid"`
+	Shares int     `json:"shares"`
+	Price  float64 `json:"price"`
 }
 
 type Cash struct {
 	Tid    int     `json:"tid"`
+	Amount float64 `json:"amount"`
+}
+
+type TradeResult struct {
+	Shares int     `json:"shares"`
 	Amount float64 `json:"amount"`
 }

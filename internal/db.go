@@ -86,56 +86,95 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	return
 }
 
-func (s *Storage) createTrade(t Trade) (int, error) {
-	var shares int
+func (s *Storage) createTrade(t *Trade) (*TradeResult, error) {
 	tx, err := s.db.Begin()
 	if checktx(err, tx) {
-		return 0, err
+		return nil, err
 	}
+
+	var shares int
 	{
 		stmt, err := tx.Prepare("SELECT shares FROM holding WHERE company_id = $1 AND trader_id = $2")
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 		defer stmt.Close()
 
 		err = stmt.QueryRow(t.Cid, t.Tid).Scan(&shares)
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 	}
-	if shares+t.Shares < 0 {
-		tx.Rollback()
-		return 0, errors.New("Not enough shares to sell")
-	}
+
+	var amount float64
 	{
-		stmt, err := tx.Prepare("INSERT INTO trade(trader_id, company_id, direction, shares, price) VALUES($1, $2, $3, $4, $5)")
+		stmt, err := tx.Prepare("SELECT amount FROM cash WHERE trader_id = $1")
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 		defer stmt.Close()
-		_, err = stmt.Exec(t.Tid, t.Cid, t.Direction, t.Shares, t.Price)
+
+		err = stmt.QueryRow(t.Tid).Scan(&amount)
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 	}
+
+	amount -= float64(t.Shares) * t.Price
 	shares += t.Shares
+	if amount < 0 {
+		tx.Rollback()
+		return nil, errors.New("Not enough cash to buy")
+	}
+	if shares < 0 {
+		tx.Rollback()
+		return nil, errors.New("Not enough shares to sell")
+	}
+
+	{
+		stmt, err := tx.Prepare("INSERT INTO trade(trader_id, company_id, shares, price) VALUES($1, $2, $3, $4)")
+		if checktx(err, tx) {
+			return nil, err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(t.Tid, t.Cid, t.Shares, t.Price)
+		if checktx(err, tx) {
+			return nil, err
+		}
+	}
 	{
 		stmt, err := tx.Prepare("UPDATE holding SET shares = $1 WHERE trader_id = $2 AND company_id = $3")
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(shares, t.Tid, t.Cid)
 		if checktx(err, tx) {
-			return 0, err
+			return nil, err
 		}
 	}
+	{
+		stmt, err := tx.Prepare("UPDATE cash SET amount = $1 WHERE trader_id = $2")
+		if checktx(err, tx) {
+			return nil, err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(amount, t.Tid)
+		if checktx(err, tx) {
+			return nil, err
+		}
+	}
+
 	err = tx.Commit()
 	if checktx(err, tx) {
-		return 0, err
+		return nil, err
 	}
-	return shares, nil
+
+	tradeResult := &TradeResult{
+		Shares: shares,
+		Amount: amount,
+	}
+	return tradeResult, nil
 }
 
 func (s *Storage) createQuote(q *Quote) {
