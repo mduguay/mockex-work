@@ -58,6 +58,18 @@ func (s *Storage) readTrader(id int) Trader {
 	return t
 }
 
+func (s *Storage) readCash(tid int) Cash {
+	stmt, err := s.db.Prepare("select amount from cash where trader_id = $1")
+	check(err)
+	defer stmt.Close()
+	c := Cash{
+		Tid: tid,
+	}
+	err = stmt.QueryRow(tid).Scan(&c.Amount)
+	check(err)
+	return c
+}
+
 func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	stmt, err := s.db.Prepare(scanner.Query())
 	check(err)

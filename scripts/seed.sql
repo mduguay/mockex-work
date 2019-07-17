@@ -11,6 +11,8 @@ INSERT INTO quote(company_id, price, stamp) VALUES (1, 11.34, NOW()), (2, 6.66, 
 INSERT INTO stock(company_id, price, vol, minchange, maxchange) 
 VALUES (1, 11.34, 0.02, 0.0, 1.0), (2, 6.67, 0.03, 0.0, 1.2);
 
+INSERT INTO cash(trader_id, amount) VALUES (1, 150000);
+
 SELECT t.email, c.symbol, h.shares
 FROM holding h
 LEFT JOIN company c

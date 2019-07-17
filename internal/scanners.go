@@ -91,3 +91,18 @@ func (ss *TraderScanner) ScanRow(stmt *sql.Stmt) interface{} {
 	check(err)
 	return t
 }
+
+type CashScanner struct {
+	id int
+}
+
+func (cs *CashScanner) Query() string {
+	return fmt.Sprintf("select amount from cash where trader_id = %v", cs.id)
+}
+
+func (cs *CashScanner) ScanRow(stmt *sql.Stmt) interface{} {
+	c := new(Cash)
+	err := stmt.QueryRow(cs.id).Scan(c.Amount)
+	check(err)
+	return c
+}

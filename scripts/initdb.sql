@@ -43,3 +43,9 @@ CREATE TABLE stock (
   minchange NUMERIC(6, 4),
   maxchange NUMERIC(6, 4)
 );
+
+CREATE TABLE cash (
+  id SERIAL PRIMARY KEY,
+  trader_id INT REFERENCES trader(id),
+  amount NUMERIC(14, 4)
+);

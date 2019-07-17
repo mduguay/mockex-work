@@ -25,6 +25,7 @@ func (rtr *Router) HandleRequests() {
 	router.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
 	router.HandleFunc("/quotes", rtr.quoteHandler)
 	router.HandleFunc("/trade", rtr.tradeHandler).Methods("POST")
+	router.HandleFunc("/cash/{tid}", rtr.cashHandler)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
 		AllowCredentials: true,
@@ -37,6 +38,7 @@ func (rtr *Router) loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := rtr.Storage.readTrader(1)
 	json.NewEncoder(w).Encode(t)
 }
+
 func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
 	cs := new(QuoteScanner)
 	companies := rtr.Storage.readMultiple(cs)
@@ -72,6 +74,17 @@ func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
 	shares, err := rtr.Storage.createTrade(t)
 	check(err)
 	json.NewEncoder(w).Encode(shares)
+}
+
+func (rtr *Router) cashHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["tid"]
+	tid, err := strconv.Atoi(key)
+	if check(err) {
+		return
+	}
+	c := rtr.Storage.readCash(tid)
+	json.NewEncoder(w).Encode(c)
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {

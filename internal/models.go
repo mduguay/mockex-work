@@ -19,3 +19,8 @@ type Trade struct {
 	Direction bool    `json:"direction"`
 	Price     float64 `json:"price"`
 }
+
+type Cash struct {
+	Tid    int     `json:"tid"`
+	Amount float64 `json:"amount"`
+}
