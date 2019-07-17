@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type Holding struct {
 	Tid    int    `json:"tid"`
 	Cid    int    `json:"cid"`
@@ -27,4 +29,9 @@ type Cash struct {
 type TradeResult struct {
 	Shares int     `json:"shares"`
 	Amount float64 `json:"amount"`
+}
+
+type HistPoint struct {
+	Price float64   `json:"price"`
+	Stamp time.Time `json:"stamp"`
 }

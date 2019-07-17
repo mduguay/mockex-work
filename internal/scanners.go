@@ -15,6 +15,8 @@ type SingleScanner interface {
 	ScanRow(row *sql.Row) interface{}
 }
 
+// --- Multi Scanners ---
+
 type QuoteScanner struct{}
 
 func (qs *QuoteScanner) Query() string {
@@ -76,6 +78,23 @@ func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
 	check(err)
 	return s
 }
+
+type HistoryScanner struct {
+	cid string
+}
+
+func (hs *HistoryScanner) Query() string {
+	return fmt.Sprintf("select price, stamp from quote where company_id = %v order by stamp desc limit 100", hs.cid)
+}
+
+func (hs *HistoryScanner) ScanRow(rows *sql.Rows) interface{} {
+	hp := new(HistPoint)
+	err := rows.Scan(&hp.Price, &hp.Stamp)
+	check(err)
+	return hp
+}
+
+// --- Single Scanners ---
 
 type TraderScanner struct {
 	id int
