@@ -90,8 +90,12 @@ func (rtr *Router) cashHandler(w http.ResponseWriter, r *http.Request) {
 
 func (rtr *Router) historyHandler(w http.ResponseWriter, r *http.Request) {
 	key := mux.Vars(r)["cid"]
+	k, err := strconv.Atoi(key)
+	if check(err) {
+		return
+	}
 	hs := new(HistoryScanner)
-	hs.cid = key
+	hs.cid = k
 	holdings := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(holdings)
 }

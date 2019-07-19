@@ -80,7 +80,7 @@ func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
 }
 
 type HistoryScanner struct {
-	cid string
+	cid int
 }
 
 func (hs *HistoryScanner) Query() string {
