@@ -35,3 +35,11 @@ type HistPoint struct {
 	Price float64   `json:"price"`
 	Stamp time.Time `json:"stamp"`
 }
+
+type Settings struct {
+	Cid       int
+	Price     float64
+	Vol       float64
+	Minchange float64
+	Maxchange float64
+}

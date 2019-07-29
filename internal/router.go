@@ -27,6 +27,7 @@ func (rtr *Router) HandleRequests() {
 	router.HandleFunc("/trade", rtr.tradeHandler).Methods("POST")
 	router.HandleFunc("/cash/{tid}", rtr.cashHandler)
 	router.HandleFunc("/history/{cid}", rtr.historyHandler)
+	router.HandleFunc("/settings/{cid}", rtr.settingsHandler).Methods("POST")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
 		AllowCredentials: true,
@@ -98,6 +99,19 @@ func (rtr *Router) historyHandler(w http.ResponseWriter, r *http.Request) {
 	hs.cid = k
 	holdings := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(holdings)
+}
+
+func (rtr *Router) settingsHandler(w http.ResponseWriter, r *http.Request) {
+	key := mux.Vars(r)["cid"]
+	k, err := strconv.Atoi(key)
+	if check(err) {
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	s := new(Settings)
+	err = decoder.Decode(s)
+	check(err)
+	rtr.Storage.updateSettings(k, s)
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {

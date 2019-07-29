@@ -211,6 +211,15 @@ func (s *Storage) createQuote(q *Quote) {
 	}
 }
 
+func (s Storage) updateSettings(cid int, settings *Settings) {
+	ustmt, err := s.db.Prepare("update stock set price = $1, vol = $2, minchange = $3, maxchange = $4 where company_id = $5")
+	check(err)
+	r, err := ustmt.Exec(settings.Price, settings.Vol, settings.Minchange, settings.Maxchange, cid)
+	check(err)
+	fmt.Println("updateSettings Result:", r)
+	return
+}
+
 func checktx(err error, tx *sql.Tx) bool {
 	if check(err) {
 		tx.Rollback()

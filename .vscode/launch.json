@@ -10,7 +10,9 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/mockex/main.go",
-      "env": {},
+      "env": {
+        "PORT": 8080
+      },
       "envFile": "${workspaceFolder}/.env",
       "args": []
     }

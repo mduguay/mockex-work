@@ -75,7 +75,7 @@ docker run -p 8080:8080 -d mock-exchange
 
 ## Future
 
-- positive shares is a buy, negative shares is a sell
+- Adjust stock variability via API
 
 - handle incorrect or undefined tid in /holdings handler
 
