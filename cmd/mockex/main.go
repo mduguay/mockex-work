@@ -26,6 +26,7 @@ func main() {
 	router := internal.Router{
 		Storage: sto,
 		Hub:     hub,
+		Market:  &mkt,
 	}
 	router.HandleRequests()
 }

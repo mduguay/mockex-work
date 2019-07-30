@@ -24,8 +24,12 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 		if !ok {
 			log.Println("Error casting stock:", s)
 		}
-		fmt.Println(quotemap[stock.symbol])
+		stopchan := make(chan struct{})
+		stoppedchan := make(chan struct{})
+		stock.stopchan = stopchan
+		stock.stoppedchan = stoppedchan
 		stock.price = quotemap[stock.symbol].Price
+		m.stocks = append(m.stocks, stock)
 		go stock.generateTicks(stocktick)
 	}
 
@@ -34,6 +38,16 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 		qbytes, err := json.Marshal(quote)
 		check(err)
 		broadcast <- qbytes
+	}
+}
+
+func (m *Market) ClosingBell() {
+	fmt.Println("Market.ClosingBell")
+	for _, s := range m.stocks {
+		fmt.Println("Stopping ", s.symbol)
+		close(s.stopchan)
+		<-s.stoppedchan
+		fmt.Println("Stopped")
 	}
 }
 

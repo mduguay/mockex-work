@@ -15,12 +15,13 @@ import (
 type Router struct {
 	Storage *Storage
 	Hub     *Hub
+	Market  *Market
 }
 
 func (rtr *Router) HandleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/login", rtr.loginHandler)
 	router.HandleFunc("/mockex", rtr.mockexStreamer)
+	router.HandleFunc("/login", rtr.loginHandler)
 	router.HandleFunc("/trader/{tid}", rtr.traderHandler)
 	router.HandleFunc("/holdings/{tid}", rtr.holdingHandler)
 	router.HandleFunc("/quotes", rtr.quoteHandler)
@@ -28,6 +29,7 @@ func (rtr *Router) HandleRequests() {
 	router.HandleFunc("/cash/{tid}", rtr.cashHandler)
 	router.HandleFunc("/history/{cid}", rtr.historyHandler)
 	router.HandleFunc("/settings/{cid}", rtr.settingsHandler).Methods("POST")
+	router.HandleFunc("/market/{action}", rtr.marketHandler)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
 		AllowCredentials: true,
@@ -112,6 +114,17 @@ func (rtr *Router) settingsHandler(w http.ResponseWriter, r *http.Request) {
 	err = decoder.Decode(s)
 	check(err)
 	rtr.Storage.updateSettings(k, s)
+}
+
+func (rtr *Router) marketHandler(w http.ResponseWriter, r *http.Request) {
+	action := mux.Vars(r)["action"]
+	fmt.Println("Router: Market: Action:", action)
+	switch action {
+	case "start":
+		rtr.Market.OpeningBell(rtr.Hub.Broadcast)
+	case "stop":
+		rtr.Market.ClosingBell()
+	}
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {
