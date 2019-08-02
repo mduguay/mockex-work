@@ -11,6 +11,10 @@ type Quote struct {
 	Cid    int     `json:"cid"`
 	Symbol string  `json:"symbol"`
 	Price  float64 `json:"price"`
+	Open   float64 `json:"open"`
+	Close  float64 `json:"close"`
+	High   float64 `json:"high"`
+	Low    float64 `json:"low"`
 }
 
 type Stock struct {
@@ -37,6 +41,10 @@ func (s *Stock) generateTicks(qPub chan *Quote) {
 				Cid:    s.cid,
 				Symbol: s.symbol,
 				Price:  s.price,
+				Open:   s.price + 3,
+				Close:  s.price - 3,
+				High:   s.price + 5,
+				Low:    s.price - 5,
 			}
 			qPub <- q
 		case <-s.stopchan:
