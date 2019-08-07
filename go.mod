@@ -1,4 +1,4 @@
-module git.csnzoo.com/mduguay/mockex
+module github.com/mduguay/mockex-work
 
 go 1.12
 

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"git.csnzoo.com/mduguay/mockex/internal"
+	"github.com/mduguay/mockex-work/internal"
 )
 
 func main() {

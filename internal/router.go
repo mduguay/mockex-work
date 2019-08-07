@@ -74,7 +74,7 @@ func (rtr *Router) tradeHandler(w http.ResponseWriter, r *http.Request) {
 	t := new(Trade)
 	err := decoder.Decode(t)
 	check(err)
-	fmt.Println(t)
+	log.Printf("Trade: %+v", t)
 	shares, err := rtr.Storage.createTrade(t)
 	check(err)
 	json.NewEncoder(w).Encode(shares)
