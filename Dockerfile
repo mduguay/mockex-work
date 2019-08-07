@@ -29,7 +29,7 @@ COPY ./ ./
 # Build executable to /app. 
 RUN CGO_ENABLED=0 go build \
     -installsuffix 'static' \
-    -o /app .
+    -o /app ./cmd/mockex
 
 # Really small image for just the app, doesn't even need an OS!
 FROM scratch as final
