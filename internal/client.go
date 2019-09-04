@@ -12,6 +12,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+// Client represents one connected streaming listener
 type Client struct {
 	hub  *Hub
 	conn *websocket.Conn

@@ -2,6 +2,7 @@ package internal
 
 import "log"
 
+// Hub is the collector of data and will publish it to all connected clients
 type Hub struct {
 	clients    map[*Client]bool
 	Broadcast  chan []byte
@@ -9,6 +10,7 @@ type Hub struct {
 	unregister chan *Client
 }
 
+// NewHub creates and initializes the hub
 func NewHub() *Hub {
 	log.Println("Hub: Creating new hub")
 	return &Hub{
@@ -19,6 +21,7 @@ func NewHub() *Hub {
 	}
 }
 
+// Run starts the hub publishing loop
 func (h *Hub) Run() {
 	log.Println("Hub: Running...")
 	for {

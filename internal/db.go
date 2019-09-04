@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	// Blank import of the postgres sql driver
 	_ "github.com/lib/pq"
 )
 
@@ -15,10 +16,12 @@ const (
 	connstring = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable"
 )
 
+// Storage is the object that connects and interacts with the database
 type Storage struct {
 	db *sql.DB
 }
 
+// Connect initializes storage and establishes a connection to the db
 func (s *Storage) Connect() {
 	env := getEnv()
 	log.Println("DB: Connecting")
@@ -31,6 +34,7 @@ func (s *Storage) Connect() {
 	s.db = db
 }
 
+// Disconnect will break the connection with the db
 func (s *Storage) Disconnect() {
 	log.Println("DB: Disconnecting")
 	s.db.Close()
@@ -51,7 +55,7 @@ func (s *Storage) readTrader(id int) Trader {
 	check(err)
 	defer stmt.Close()
 	t := Trader{
-		Id: id,
+		ID: id,
 	}
 	err = stmt.QueryRow(id).Scan(&t.Email)
 	check(err)

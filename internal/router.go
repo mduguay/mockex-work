@@ -12,12 +12,14 @@ import (
 	"github.com/rs/cors"
 )
 
+// Router is the object that handles http requests
 type Router struct {
 	Storage *Storage
 	Hub     *Hub
 	Market  *Market
 }
 
+// HandleRequests captures all incoming http requests and routes them accordingly
 func (rtr *Router) HandleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/mockex", rtr.mockexStreamer)

@@ -5,11 +5,13 @@ import (
 	"fmt"
 )
 
+// Scanner will iterate through the rows of the given query and process them
 type Scanner interface {
 	Query() string
 	ScanRow(rows *sql.Rows) interface{}
 }
 
+// SingleScanner handles a query that results in a single row
 type SingleScanner interface {
 	Query() string
 	ScanRow(row *sql.Row) interface{}
@@ -17,6 +19,7 @@ type SingleScanner interface {
 
 // --- Multi Scanners ---
 
+// QuoteScanner reads quotes from the database
 type QuoteScanner struct{}
 
 func (qs *QuoteScanner) Query() string {

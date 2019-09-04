@@ -6,11 +6,13 @@ import (
 	"log"
 )
 
+// Market is the object that manages all stocks
 type Market struct {
 	stocks  []*Stock
 	Storage *Storage
 }
 
+// OpeningBell will tell the market to start ticking all stocks
 func (m *Market) OpeningBell(broadcast chan []byte) {
 	quotemap := m.getStartQuotes()
 
@@ -41,6 +43,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 	}
 }
 
+// ClosingBell will stop the stocks from ticking
 func (m *Market) ClosingBell() {
 	fmt.Println("Market.ClosingBell")
 	for _, s := range m.stocks {
