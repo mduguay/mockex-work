@@ -22,6 +22,7 @@ type SingleScanner interface {
 // QuoteScanner reads quotes from the database
 type QuoteScanner struct{}
 
+// Query is the db query to be executed
 func (qs *QuoteScanner) Query() string {
 	return `
 		select c.id, c.symbol, q.price lastprice
@@ -38,6 +39,7 @@ func (qs *QuoteScanner) Query() string {
 		`
 }
 
+// ScanRow reads a row from the db and creates a Quote
 func (qs *QuoteScanner) ScanRow(rows *sql.Rows) interface{} {
 	q := new(Quote)
 	err := rows.Scan(&q.Cid, &q.Symbol, &q.Price)
@@ -45,10 +47,12 @@ func (qs *QuoteScanner) ScanRow(rows *sql.Rows) interface{} {
 	return q
 }
 
+// HoldingScanner is responsible for fetching the holdings for a given trader
 type HoldingScanner struct {
 	uid string
 }
 
+// Query is the db query to be executed
 func (hs *HoldingScanner) Query() string {
 	return fmt.Sprintf(`
 		select h.trader_id, c.id, c.symbol, h.shares
@@ -57,6 +61,7 @@ func (hs *HoldingScanner) Query() string {
 		where h.trader_id = %v`, hs.uid)
 }
 
+// ScanRow reads from the db results and creates a Holding
 func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	h := new(Holding)
 	err := rows.Scan(&h.Tid, &h.Cid, &h.Symbol, &h.Shares)
@@ -64,8 +69,10 @@ func (hs *HoldingScanner) ScanRow(rows *sql.Rows) interface{} {
 	return h
 }
 
+// StockScanner is responsible for fetching stocks form the db for a given company
 type StockScanner struct{}
 
+// Query is the db query to be executed
 func (ss *StockScanner) Query() string {
 	return `
 		select c.id, c.symbol, s.price, s.vol, s.minchange, s.maxchange
@@ -75,6 +82,7 @@ func (ss *StockScanner) Query() string {
 		`
 }
 
+// ScanRow reads the results from storage and creates a Stock
 func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
 	s := new(Stock)
 	err := rows.Scan(&s.cid, &s.symbol, &s.price, &s.vol, &s.min, &s.max)
@@ -82,14 +90,17 @@ func (ss *StockScanner) ScanRow(rows *sql.Rows) interface{} {
 	return s
 }
 
+// HistoryScanner is responsible for fetching the history of a given stock
 type HistoryScanner struct {
 	cid int
 }
 
+// Query is the db query to be executed
 func (hs *HistoryScanner) Query() string {
 	return fmt.Sprintf("select price, stamp from quote where company_id = %v order by stamp desc limit 100", hs.cid)
 }
 
+// ScanRow reads the results from storage and creates a HistPoint
 func (hs *HistoryScanner) ScanRow(rows *sql.Rows) interface{} {
 	hp := new(HistPoint)
 	err := rows.Scan(&hp.Price, &hp.Stamp)
@@ -99,29 +110,35 @@ func (hs *HistoryScanner) ScanRow(rows *sql.Rows) interface{} {
 
 // --- Single Scanners ---
 
+// TraderScanner is responsible for fetching a single trader given an id
 type TraderScanner struct {
 	id int
 }
 
+// Query is the db query to be executed
 func (ts *TraderScanner) Query() string {
 	return fmt.Sprintf("select email from trader where id = %v", ts.id)
 }
 
-func (ss *TraderScanner) ScanRow(stmt *sql.Stmt) interface{} {
+// ScanRow handles the result given from the db query above
+func (ts *TraderScanner) ScanRow(stmt *sql.Stmt) interface{} {
 	t := new(Trader)
-	err := stmt.QueryRow(ss.id).Scan(t.Email)
+	err := stmt.QueryRow(ts.id).Scan(t.Email)
 	check(err)
 	return t
 }
 
+// CashScanner is responsible for reading the cash value from the db for the given trader
 type CashScanner struct {
 	id int
 }
 
+// Query is the db query to be executed
 func (cs *CashScanner) Query() string {
 	return fmt.Sprintf("select amount from cash where trader_id = %v", cs.id)
 }
 
+// ScanRow handles the result given from the db query above
 func (cs *CashScanner) ScanRow(stmt *sql.Stmt) interface{} {
 	c := new(Cash)
 	err := stmt.QueryRow(cs.id).Scan(c.Amount)

@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Quote represents an individual tick of a stock
 type Quote struct {
 	Cid    int     `json:"cid"`
 	Symbol string  `json:"symbol"`
@@ -17,6 +18,7 @@ type Quote struct {
 	Low    float64 `json:"low"`
 }
 
+// Stock represents a single stock, and associated settings
 type Stock struct {
 	cid         int
 	symbol      string
