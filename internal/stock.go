@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"math/rand"
 	"time"
@@ -58,23 +57,15 @@ func (s *Stock) tickPrice() {
 }
 
 func (s *Stock) backfillTicks(quotechan chan *Quote, stamp time.Time) {
-	log.Println("Stock: Backfill Ticks")
 	// for stamp.Before(time.Now()) {
-	log.Println("Init stamp:", stamp)
 	i := 0
 	for i < 5 {
-		log.Println(i)
 		stamp := stamp.Add(interval())
-		log.Println("New stamp:", stamp)
-		log.Println("Ticking price")
 		s.tickPrice()
-		log.Println("Creating quote")
 		q := s.createQuote(stamp)
-		log.Println("Publishing to quotechan")
 		quotechan <- q
 		i++
 	}
-	log.Println("--- Done Backfilling ---")
 	close(quotechan)
 }
 

@@ -61,11 +61,9 @@ func (m *Market) backfill() {
 		//now := time.Now()
 		//starttime := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, time.UTC)
 		starttime := quotemap[stock.symbol].Timestamp
-		log.Println("Starttime", starttime)
 		go stock.backfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
-			log.Println("Market: Saving quote to db")
 			m.Storage.createQuote(quote)
 		}
 	}
