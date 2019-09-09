@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 )
 
 // Market is the object that manages all stocks
@@ -55,12 +56,16 @@ func (m *Market) backfill() {
 	stocks := m.scanStocks()
 
 	for _, stock := range stocks {
-		stocktick := make(chan *Quote)
-		log.Printf("Market: Backfilling for symbol %v\n", stock.symbol)
 		stock.price = quotemap[stock.symbol].Price
-		//now := time.Now()
-		//starttime := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, time.UTC)
+
+		now := time.Now()
+		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, time.UTC)
 		starttime := quotemap[stock.symbol].Timestamp
+		if starttime.Before(todayopen) {
+			starttime = todayopen
+		}
+
+		stocktick := make(chan *Quote)
 		go stock.backfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {

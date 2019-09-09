@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"time"
@@ -38,7 +38,7 @@ func (s *Stock) generateTicks(qPub chan *Quote) {
 		default:
 			s.streamTick(qPub)
 		case <-s.stopchan:
-			fmt.Println("Stock.stopchan")
+			log.Println("Stopping tick generation")
 			return
 		}
 	}
