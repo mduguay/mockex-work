@@ -57,14 +57,13 @@ func (s *Stock) tickPrice() {
 }
 
 func (s *Stock) backfillTicks(quotechan chan *Quote, stamp time.Time) {
-	// for stamp.Before(time.Now()) {
-	i := 0
-	for i < 5 {
-		stamp := stamp.Add(interval())
+	now := time.Now()
+	for stamp.Before(now) {
+		i := interval()
+		stamp = stamp.Add(i)
 		s.tickPrice()
 		q := s.createQuote(stamp)
 		quotechan <- q
-		i++
 	}
 	close(quotechan)
 }
