@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 )
@@ -15,8 +14,10 @@ type Market struct {
 
 // OpeningBell will tell the market to start ticking all stocks
 func (m *Market) OpeningBell(broadcast chan []byte) {
-	m.backfill()
 	log.Println("Market: Opening Bell")
+
+	m.backfill()
+
 	quotemap := m.getStartQuotes()
 	stocks := m.scanStocks()
 	stocktick := make(chan *Quote)
@@ -41,12 +42,10 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 
 // ClosingBell will stop the stocks from ticking
 func (m *Market) ClosingBell() {
-	fmt.Println("Market.ClosingBell")
+	log.Println("Market: Closing Bell")
 	for _, s := range m.stocks {
-		fmt.Println("Stopping ", s.symbol)
 		close(s.stopchan)
 		<-s.stoppedchan
-		fmt.Println("Stopped")
 	}
 }
 
