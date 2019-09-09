@@ -9,13 +9,14 @@ import (
 
 // Quote represents an individual tick of a stock
 type Quote struct {
-	Cid    int     `json:"cid"`
-	Symbol string  `json:"symbol"`
-	Price  float64 `json:"price"`
-	Open   float64 `json:"open"`
-	Close  float64 `json:"close"`
-	High   float64 `json:"high"`
-	Low    float64 `json:"low"`
+	Cid       int       `json:"cid"`
+	Timestamp time.Time `json:"timestamp"`
+	Symbol    string    `json:"symbol"`
+	Price     float64   `json:"price"`
+	Open      float64   `json:"open"`
+	Close     float64   `json:"close"`
+	High      float64   `json:"high"`
+	Low       float64   `json:"low"`
 }
 
 // Stock represents a single stock, and associated settings
@@ -35,20 +36,7 @@ func (s *Stock) generateTicks(qPub chan *Quote) {
 	for {
 		select {
 		default:
-			interval := rand.Intn(4000) + 2750
-			//interval := 0
-			time.Sleep(time.Duration(interval) * time.Millisecond)
-			s.tickPrice()
-			q := &Quote{
-				Cid:    s.cid,
-				Symbol: s.symbol,
-				Price:  s.price,
-				Open:   s.price + 3,
-				Close:  s.price - 3,
-				High:   s.price + 5,
-				Low:    s.price - 5,
-			}
-			qPub <- q
+			s.streamTick(qPub)
 		case <-s.stopchan:
 			fmt.Println("Stock.stopchan")
 			return
@@ -66,4 +54,39 @@ func (s *Stock) tickPrice() {
 	newPrice := s.price + changeAmt
 	rPrice := math.Round(newPrice*100) / 100
 	s.price = rPrice
+}
+
+func (s *Stock) backfillTicks(quotechan chan *Quote, timestamp time.Time) {
+	stamp := timestamp.Add(interval())
+	if stamp.After(time.Now()) {
+		close(quotechan)
+	}
+	s.tickPrice()
+	q := s.createQuote(stamp)
+	quotechan <- q
+}
+
+func (s *Stock) streamTick(qPub chan *Quote) {
+	time.Sleep(interval())
+	s.tickPrice()
+	q := s.createQuote(time.Now())
+	qPub <- q
+}
+
+func (s *Stock) createQuote(stamp time.Time) *Quote {
+	return &Quote{
+		Cid:       s.cid,
+		Timestamp: stamp,
+		Symbol:    s.symbol,
+		Price:     s.price,
+		Open:      s.price + 3,
+		Close:     s.price - 3,
+		High:      s.price + 5,
+		Low:       s.price - 5,
+	}
+}
+
+func interval() time.Duration {
+	interval := rand.Intn(4000) + 2750
+	return time.Duration(interval) * time.Millisecond
 }

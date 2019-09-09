@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	// Blank import of the postgres sql driver
 	_ "github.com/lib/pq"
@@ -204,7 +203,7 @@ func (s *Storage) createQuote(q *Quote) {
 			return
 		}
 		defer istmt.Close()
-		_, err = istmt.Exec(id, q.Price, time.Now())
+		_, err = istmt.Exec(id, q.Price, q.Timestamp)
 		if checktx(err, tx) {
 			return
 		}
