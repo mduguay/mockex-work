@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"time"
@@ -56,14 +57,25 @@ func (s *Stock) tickPrice() {
 	s.price = rPrice
 }
 
-func (s *Stock) backfillTicks(quotechan chan *Quote, timestamp time.Time) {
-	stamp := timestamp.Add(interval())
-	if stamp.After(time.Now()) {
-		close(quotechan)
+func (s *Stock) backfillTicks(quotechan chan *Quote, stamp time.Time) {
+	log.Println("Stock: Backfill Ticks")
+	// for stamp.Before(time.Now()) {
+	log.Println("Init stamp:", stamp)
+	i := 0
+	for i < 5 {
+		log.Println(i)
+		stamp := stamp.Add(interval())
+		log.Println("New stamp:", stamp)
+		log.Println("Ticking price")
+		s.tickPrice()
+		log.Println("Creating quote")
+		q := s.createQuote(stamp)
+		log.Println("Publishing to quotechan")
+		quotechan <- q
+		i++
 	}
-	s.tickPrice()
-	q := s.createQuote(stamp)
-	quotechan <- q
+	log.Println("--- Done Backfilling ---")
+	close(quotechan)
 }
 
 func (s *Stock) streamTick(qPub chan *Quote) {

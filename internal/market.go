@@ -14,6 +14,8 @@ type Market struct {
 
 // OpeningBell will tell the market to start ticking all stocks
 func (m *Market) OpeningBell(broadcast chan []byte) {
+	m.backfill()
+	log.Println("Market: Opening Bell")
 	quotemap := m.getStartQuotes()
 	stocks := m.scanStocks()
 	stocktick := make(chan *Quote)
@@ -48,29 +50,25 @@ func (m *Market) ClosingBell() {
 }
 
 func (m *Market) backfill() {
+	log.Println("Market: Backfilling")
 	quotemap := m.getStartQuotes()
 	stocks := m.scanStocks()
-	stocktick := make(chan *Quote)
 
 	for _, stock := range stocks {
+		stocktick := make(chan *Quote)
+		log.Printf("Market: Backfilling for symbol %v\n", stock.symbol)
 		stock.price = quotemap[stock.symbol].Price
-		stock.backfillTicks(stocktick, quotemap[stock.symbol].Timestamp)
+		//now := time.Now()
+		//starttime := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, time.UTC)
+		starttime := quotemap[stock.symbol].Timestamp
+		log.Println("Starttime", starttime)
+		go stock.backfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
+			log.Println("Market: Saving quote to db")
 			m.Storage.createQuote(quote)
 		}
 	}
-	// backfill up to current date
-	// avoid backfilling over previous quotes?
-	// Only on business days
-	// What frequency? Standard 5 seconds, or random interval?
-	// How far back? Week month day?
-	// Run backfill once from inception. Subsequent backfill runs will go from high water mark to current.
-	// Have to keep history of when stock was ticking.
-	// Make up time in between?
-	// Can pull most recent quote, and backfill up to current.
-	// Can nuke current quotes and create seed backfill
-	// from then on, backfill from last quote to present.
 }
 
 func (m *Market) getStartQuotes() map[string]*Quote {

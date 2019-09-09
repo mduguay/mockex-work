@@ -32,6 +32,7 @@ func (rtr *Router) HandleRequests() {
 	router.HandleFunc("/history/{cid}", rtr.historyHandler)
 	router.HandleFunc("/settings/{cid}", rtr.settingsHandler).Methods("POST")
 	router.HandleFunc("/market/{action}", rtr.marketHandler)
+	router.HandleFunc("/backfill", rtr.backfillHandler)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("ALLOWED_ORIGIN")},
 		AllowCredentials: true,
@@ -127,6 +128,11 @@ func (rtr *Router) marketHandler(w http.ResponseWriter, r *http.Request) {
 	case "stop":
 		rtr.Market.ClosingBell()
 	}
+}
+
+func (rtr *Router) backfillHandler(w http.ResponseWriter, r *http.Request) {
+	rtr.Market.backfill()
+	return
 }
 
 func (rtr *Router) mockexStreamer(w http.ResponseWriter, r *http.Request) {
