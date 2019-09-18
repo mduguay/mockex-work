@@ -58,7 +58,7 @@ func (m *Market) backfill() {
 		stock.price = quotemap[stock.symbol].Price
 
 		now := time.Now()
-		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, time.UTC)
+		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
 		starttime := quotemap[stock.symbol].Timestamp
 		if starttime.Before(todayopen) {
 			starttime = todayopen
@@ -68,6 +68,7 @@ func (m *Market) backfill() {
 		go stock.backfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
+			// Quote in storage should not have high, low, open, close
 			m.Storage.createQuote(quote)
 		}
 	}
@@ -101,4 +102,26 @@ func (m *Market) scanStocks() []*Stock {
 		stocks = append(stocks, stock)
 	}
 	return stocks
+}
+
+func (m *Market) history() []*Quote {
+	// scan all quotes in time interval
+	// for now, just today
+	qscan := new(QuoteScanner)
+	quotes := m.Storage.readMultiple(qscan)
+	// figure out increment amount (5 mins)
+	// sort by time
+	// loop through all quotes in increment
+	// record start, end, high, low (sort for high/low)
+	// stamp quote with start time or end time?
+	return &ChartPoint{
+		Cid:       s.cid,
+		Timestamp: stamp,
+		Symbol:    s.symbol,
+		Price:     s.price,
+		Open:      s.price + 3,
+		Close:     s.price - 3,
+		High:      s.price + 5,
+		Low:       s.price - 5,
+	}
 }

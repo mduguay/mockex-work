@@ -13,10 +13,6 @@ type Quote struct {
 	Timestamp time.Time `json:"timestamp"`
 	Symbol    string    `json:"symbol"`
 	Price     float64   `json:"price"`
-	Open      float64   `json:"open"`
-	Close     float64   `json:"close"`
-	High      float64   `json:"high"`
-	Low       float64   `json:"low"`
 }
 
 // Stock represents a single stock, and associated settings
@@ -29,6 +25,15 @@ type Stock struct {
 	vol         float64
 	stopchan    chan struct{}
 	stoppedchan chan struct{}
+}
+
+// ChartPoint is a candlestick point containing aggregate values for a timespan
+type ChartPoint struct {
+	Cid   int     `json:"cid"`
+	Open  float64 `json:"open"`
+	Close float64 `json:"close"`
+	High  float64 `json:"high"`
+	Low   float64 `json:"low"`
 }
 
 func (s *Stock) generateTicks(qPub chan *Quote) {
@@ -76,15 +81,12 @@ func (s *Stock) streamTick(qPub chan *Quote) {
 }
 
 func (s *Stock) createQuote(stamp time.Time) *Quote {
+	// Quote should only have time, symbol, and price. open close high low are for an interval of quotes
 	return &Quote{
 		Cid:       s.cid,
 		Timestamp: stamp,
 		Symbol:    s.symbol,
 		Price:     s.price,
-		Open:      s.price + 3,
-		Close:     s.price - 3,
-		High:      s.price + 5,
-		Low:       s.price - 5,
 	}
 }
 
