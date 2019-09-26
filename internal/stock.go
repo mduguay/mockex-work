@@ -27,15 +27,6 @@ type Stock struct {
 	stoppedchan chan struct{}
 }
 
-// ChartPoint is a candlestick point containing aggregate values for a timespan
-type ChartPoint struct {
-	Cid   int     `json:"cid"`
-	Open  float64 `json:"open"`
-	Close float64 `json:"close"`
-	High  float64 `json:"high"`
-	Low   float64 `json:"low"`
-}
-
 func (s *Stock) generateTicks(qPub chan *Quote) {
 	defer close(s.stoppedchan)
 	for {

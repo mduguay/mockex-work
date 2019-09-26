@@ -103,36 +103,3 @@ func (m *Market) scanStocks() []*Stock {
 	}
 	return stocks
 }
-
-// func (m *Market) history() []*ChartPoint {
-// 	// scan all quotes in time interval
-// 	// for now, just today
-// 	qscan := new(QuoteScanner)
-// 	quotes := m.Storage.readMultiple(qscan)
-// 	bookmark := quotes[0].Timestamp
-// 	for _, q := range quotes {
-// 		if q.Price < low {
-// 			low = q.Price
-// 		} else if q.Price > high {
-// 			high = q.Price
-// 		}
-// 		if q.Timestamp > bookmark {
-// 			// create chartpoint
-// 			c := &ChartPoint{
-// 				Cid:       s.cid,
-// 				Open:      s.price + 3,
-// 				Close:     s.price - 3,
-// 				High:      s.price + 5,
-// 				Low:       s.price - 5,
-// 			}
-// 			// reset low high open close
-// 			// update bookmark
-// 		}
-// 	}
-// 	// figure out increment amount (5 mins)
-// 	// sort by time
-// 	// loop through all quotes in increment
-// 	// record start, end, high, low (sort for high/low)
-// 	// stamp quote with start time or end time?
-// 	return
-// }
