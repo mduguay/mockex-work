@@ -7,26 +7,6 @@ import (
 	"time"
 )
 
-// Quote represents an individual tick of a stock
-type Quote struct {
-	Cid       int       `json:"cid"`
-	Timestamp time.Time `json:"timestamp"`
-	Symbol    string    `json:"symbol"`
-	Price     float64   `json:"price"`
-}
-
-// Stock represents a single stock, and associated settings
-type Stock struct {
-	cid         int
-	symbol      string
-	price       float64
-	min         float64
-	max         float64
-	vol         float64
-	stopchan    chan struct{}
-	stoppedchan chan struct{}
-}
-
 func (s *Stock) generateTicks(qPub chan *Quote) {
 	defer close(s.stoppedchan)
 	for {
