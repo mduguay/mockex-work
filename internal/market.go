@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+
+	"github.com/mduguay/mockex-work/data"
 )
 
 // Market is the object that manages all stocks
 type Market struct {
-	stocks  []*Stock
+	stocks  []*data.Stock
 	Storage *Storage
 }
 
@@ -20,7 +22,7 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 
 	quotemap := m.getStartQuotes()
 	stocks := m.scanStocks()
-	stocktick := make(chan *Quote)
+	stocktick := make(chan *data.Quote)
 
 	for _, stock := range stocks {
 		stopchan := make(chan struct{})
@@ -64,7 +66,7 @@ func (m *Market) backfill() {
 			starttime = todayopen
 		}
 
-		stocktick := make(chan *Quote)
+		stocktick := make(chan *data.Quote)
 		go stock.backfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
@@ -74,12 +76,12 @@ func (m *Market) backfill() {
 	}
 }
 
-func (m *Market) getStartQuotes() map[string]*Quote {
-	qm := make(map[string]*Quote)
-	qscan := new(QuoteScanner)
+func (m *Market) getStartQuotes() map[string]*data.Quote {
+	qm := make(map[string]*data.Quote)
+	qscan := new(data.QuoteScanner)
 	quotes := m.Storage.readMultiple(qscan)
 	for _, q := range quotes {
-		quote, ok := q.(*Quote)
+		quote, ok := q.(*data.Quote)
 		if !ok {
 			log.Println("Error casting quote:", q)
 		}
@@ -88,13 +90,13 @@ func (m *Market) getStartQuotes() map[string]*Quote {
 	return qm
 }
 
-func (m *Market) scanStocks() []*Stock {
-	sscan := new(StockScanner)
+func (m *Market) scanStocks() []*data.Stock {
+	sscan := new(data.StockScanner)
 	rawstocks := m.Storage.readMultiple(sscan)
-	var stocks []*Stock
+	var stocks []*data.Stock
 
 	for _, s := range rawstocks {
-		stock, ok := s.(*Stock)
+		stock, ok := s.(*data.Stock)
 		if !ok {
 			log.Println("Error casting stock:", s)
 			continue

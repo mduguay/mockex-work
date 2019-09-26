@@ -15,6 +15,18 @@ const (
 	connstring = "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable"
 )
 
+// Scanner will iterate through the rows of the given query and process them
+type Scanner interface {
+	Query() string
+	ScanRow(rows *sql.Rows) (interface{}, error)
+}
+
+// SingleScanner handles a query that results in a single row
+type SingleScanner interface {
+	Query() string
+	ScanRow(row *sql.Row) interface{}
+}
+
 // Storage is the object that connects and interacts with the database
 type Storage struct {
 	db *sql.DB
