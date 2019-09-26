@@ -72,7 +72,6 @@ func (s *Stock) streamTick(qPub chan *Quote) {
 }
 
 func (s *Stock) createQuote(stamp time.Time) *Quote {
-	// Quote should only have time, symbol, and price. open close high low are for an interval of quotes
 	return &Quote{
 		Cid:       s.cid,
 		Timestamp: stamp,

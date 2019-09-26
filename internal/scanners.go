@@ -3,6 +3,7 @@ package internal
 import (
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 // Scanner will iterate through the rows of the given query and process them
@@ -97,7 +98,14 @@ type HistoryScanner struct {
 
 // Query is the db query to be executed
 func (hs *HistoryScanner) Query() string {
-	return fmt.Sprintf("select price, stamp from quote where company_id = %v order by stamp desc limit 100", hs.cid)
+	t := time.Now()
+	location, err := time.LoadLocation("America/New_York")
+	if check(err) {
+		return ""
+	}
+	opening := time.Date(t.Year(), t.Month(), t.Day(), 9, 0, 0, 0, location)
+	fmt.Println(opening)
+	return fmt.Sprintf("select price, stamp from quote where company_id = %v and stamp > now()::date order by stamp desc", hs.cid)
 }
 
 // ScanRow reads the results from storage and creates a HistPoint
