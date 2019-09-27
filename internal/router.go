@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/mduguay/mockex-work/data"
 	"github.com/rs/cors"
 )
 
@@ -47,7 +48,7 @@ func (rtr *Router) loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
-	cs := new(QuoteScanner)
+	cs := new(data.QuoteScanner)
 	companies := rtr.Storage.readMultiple(cs)
 	json.NewEncoder(w).Encode(companies)
 }
@@ -55,8 +56,8 @@ func (rtr *Router) quoteHandler(w http.ResponseWriter, r *http.Request) {
 func (rtr *Router) holdingHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["tid"]
-	hs := new(HoldingScanner)
-	hs.uid = key
+	hs := new(data.HoldingScanner)
+	hs.UID = key
 	holdings := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(holdings)
 }
@@ -100,8 +101,8 @@ func (rtr *Router) historyHandler(w http.ResponseWriter, r *http.Request) {
 	if check(err) {
 		return
 	}
-	hs := new(HistoryScanner)
-	hs.cid = k
+	hs := new(data.HistoryScanner)
+	hs.Cid = k
 	holdings := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(holdings)
 }

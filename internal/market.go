@@ -27,11 +27,11 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 	for _, stock := range stocks {
 		stopchan := make(chan struct{})
 		stoppedchan := make(chan struct{})
-		stock.stopchan = stopchan
-		stock.stoppedchan = stoppedchan
-		stock.price = quotemap[stock.symbol].Price
+		stock.Stopchan = stopchan
+		stock.Stoppedchan = stoppedchan
+		stock.Price = quotemap[stock.Symbol].Price
 		m.stocks = append(m.stocks, stock)
-		go stock.generateTicks(stocktick)
+		go stock.GenerateTicks(stocktick)
 	}
 
 	for quote := range stocktick {
@@ -46,8 +46,8 @@ func (m *Market) OpeningBell(broadcast chan []byte) {
 func (m *Market) ClosingBell() {
 	log.Println("Market: Closing Bell")
 	for _, s := range m.stocks {
-		close(s.stopchan)
-		<-s.stoppedchan
+		close(s.Stopchan)
+		<-s.Stoppedchan
 	}
 }
 
@@ -57,17 +57,17 @@ func (m *Market) backfill() {
 	stocks := m.scanStocks()
 
 	for _, stock := range stocks {
-		stock.price = quotemap[stock.symbol].Price
+		stock.Price = quotemap[stock.Symbol].Price
 
 		now := time.Now()
 		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
-		starttime := quotemap[stock.symbol].Timestamp
+		starttime := quotemap[stock.Symbol].Timestamp
 		if starttime.Before(todayopen) {
 			starttime = todayopen
 		}
 
 		stocktick := make(chan *data.Quote)
-		go stock.backfillTicks(stocktick, starttime)
+		go stock.BackfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
 			// Quote in storage should not have high, low, open, close

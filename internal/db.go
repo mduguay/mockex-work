@@ -9,6 +9,7 @@ import (
 
 	// Blank import of the postgres sql driver
 	_ "github.com/lib/pq"
+	"github.com/mduguay/mockex-work/data"
 )
 
 const (
@@ -61,11 +62,11 @@ func getEnv() map[string]string {
 	return env
 }
 
-func (s *Storage) readTrader(id int) Trader {
+func (s *Storage) readTrader(id int) data.Trader {
 	stmt, err := s.db.Prepare("select email from trader where id = $1")
 	check(err)
 	defer stmt.Close()
-	t := Trader{
+	t := data.Trader{
 		ID: id,
 	}
 	err = stmt.QueryRow(id).Scan(&t.Email)
@@ -73,11 +74,11 @@ func (s *Storage) readTrader(id int) Trader {
 	return t
 }
 
-func (s *Storage) readCash(tid int) Cash {
+func (s *Storage) readCash(tid int) data.Cash {
 	stmt, err := s.db.Prepare("select amount from cash where trader_id = $1")
 	check(err)
 	defer stmt.Close()
-	c := Cash{
+	c := data.Cash{
 		Tid: tid,
 	}
 	err = stmt.QueryRow(tid).Scan(&c.Amount)
@@ -93,7 +94,8 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	check(err)
 	defer rows.Close()
 	for rows.Next() {
-		item := scanner.ScanRow(rows)
+		item, err := scanner.ScanRow(rows)
+		check(err)
 		items = append(items, item)
 	}
 	err = rows.Err()
@@ -192,7 +194,7 @@ func (s *Storage) createTrade(t *Trade) (*TradeResult, error) {
 	return tradeResult, nil
 }
 
-func (s *Storage) createQuote(q *Quote) {
+func (s *Storage) createQuote(q *data.Quote) {
 	var id int
 	tx, err := s.db.Begin()
 	if checktx(err, tx) {
