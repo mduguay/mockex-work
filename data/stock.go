@@ -26,7 +26,7 @@ type StockScanner struct{}
 // Query is the db query to be executed
 func (ss *StockScanner) Query() string {
 	return `
-		select c.id, c.symbol, s.price, s.vol, s.minchange, s.maxchange
+		select c.id, c.symbol, s.vol, s.minchange, s.maxchange
 		from stock s
 		left join company c
 		on s.company_id = c.id
@@ -36,7 +36,7 @@ func (ss *StockScanner) Query() string {
 // ScanRow reads the results from storage and creates a Stock
 func (ss *StockScanner) ScanRow(rows *sql.Rows) (interface{}, error) {
 	s := new(Stock)
-	err := rows.Scan(&s.cid, &s.Symbol, &s.Price, &s.vol, &s.min, &s.max)
+	err := rows.Scan(&s.cid, &s.Symbol, &s.vol, &s.min, &s.max)
 	return s, err
 }
 

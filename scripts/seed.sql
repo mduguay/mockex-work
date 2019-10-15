@@ -8,8 +8,8 @@ INSERT INTO trade(trader_id, company_id, shares, price) VALUES (1, 1, 100, 134.6
 
 INSERT INTO quote(company_id, price, stamp) VALUES (1, 11.34, NOW()), (2, 6.66, NOW());
 
-INSERT INTO stock(company_id, price, vol, minchange, maxchange) 
-VALUES (1, 11.34, 0.02, 0.0, 1.0), (2, 6.67, 0.03, 0.0, 1.2);
+INSERT INTO stock(company_id, vol, minchange, maxchange) 
+VALUES (1, 0.02, 0.0, 1.0), (2, 0.03, 0.0, 1.2);
 
 INSERT INTO cash(trader_id, amount) VALUES (1, 150000);
 
