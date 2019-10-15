@@ -60,7 +60,7 @@ func (m *Market) backfill() {
 		stock.Price = quotemap[stock.Symbol].Price
 
 		now := time.Now()
-		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
+		todayopen := time.Date(now.Year(), now.Month(), now.Day(), 13, 30, 0, 0, time.UTC)
 		starttime := quotemap[stock.Symbol].Timestamp
 		if starttime.Before(todayopen) {
 			starttime = todayopen
