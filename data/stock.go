@@ -68,7 +68,7 @@ func (s *Stock) tickPrice() {
 
 // BackfillTicks will create quotes from the given stamp until now
 func (s *Stock) BackfillTicks(quotechan chan *Quote, stamp time.Time) {
-	now := time.Now()
+	now := time.Now().UTC()
 	for stamp.Before(now) {
 		i := interval()
 		stamp = stamp.Add(i)
@@ -82,7 +82,7 @@ func (s *Stock) BackfillTicks(quotechan chan *Quote, stamp time.Time) {
 func (s *Stock) streamTick(qPub chan *Quote) {
 	time.Sleep(interval())
 	s.tickPrice()
-	q := s.createQuote(time.Now())
+	q := s.createQuote(time.Now().UTC())
 	qPub <- q
 }
 
