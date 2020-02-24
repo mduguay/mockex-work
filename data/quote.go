@@ -33,6 +33,11 @@ func (qs *QuoteScanner) Query() string {
 		`
 }
 
+// Params returns the parameters for the query
+func (qs *QuoteScanner) Params() []interface{} {
+	return []interface{}{}
+}
+
 // ScanRow reads a row from the db and creates a Quote
 func (qs *QuoteScanner) ScanRow(rows *sql.Rows) (interface{}, error) {
 	q := new(Quote)

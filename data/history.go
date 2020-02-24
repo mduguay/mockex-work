@@ -20,7 +20,12 @@ type HistPoint struct {
 
 // Query is the db query to be executed
 func (hs *HistoryScanner) Query() string {
-	return fmt.Sprintf("select price, stamp from quote where company_id = %v and stamp > %v order by stamp desc", hs.Cid, hs.Since)
+	return fmt.Sprintf("select price, stamp from quote where company_id = $1 and stamp > $2 order by stamp desc")
+}
+
+// Params returns the parameters for the query
+func (hs *HistoryScanner) Params() []interface{} {
+	return []interface{}{hs.Cid, hs.Since}
 }
 
 // ScanRow reads the results from storage and creates a HistPoint

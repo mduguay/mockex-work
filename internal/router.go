@@ -104,12 +104,13 @@ func (rtr *Router) historyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	hs := new(data.HistoryScanner)
 	hs.Cid = k
-	// year, month, day := time.Now().Date()
-	// hs.Since = fmt.Sprintf("%v-%v-%v", year, int(month), day)
-	hs.Since = time.Now().Truncate(24 * time.Hour)
+	now := time.Now()
+	// since := now.AddDate(0, -1, 0)
+	hs.Since = now.AddDate(0, -1, 0)
+	//hs.Since = time.Now().Truncate(24 * time.Hour)
 	log.Println(hs.Since)
-	holdings := rtr.Storage.readMultiple(hs)
-	json.NewEncoder(w).Encode(holdings)
+	history := rtr.Storage.readMultiple(hs)
+	json.NewEncoder(w).Encode(history)
 }
 
 func (rtr *Router) settingsHandler(w http.ResponseWriter, r *http.Request) {

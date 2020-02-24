@@ -24,7 +24,12 @@ func (hs *HoldingScanner) Query() string {
 		select h.trader_id, c.id, c.symbol, h.shares
 		from holding h
 		left join company c on h.company_id = c.id
-		where h.trader_id = %v`, hs.UID)
+		where h.trader_id = $1`)
+}
+
+// Params returns the parameters for the above query
+func (hs *HoldingScanner) Params() []interface{} {
+	return []interface{}{hs.UID}
 }
 
 // ScanRow reads from the db results and creates a Holding

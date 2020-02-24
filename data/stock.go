@@ -33,6 +33,11 @@ func (ss *StockScanner) Query() string {
 		`
 }
 
+// Params returns parameters (in this case none)
+func (ss *StockScanner) Params() []interface{} {
+	return nil
+}
+
 // ScanRow reads the results from storage and creates a Stock
 func (ss *StockScanner) ScanRow(rows *sql.Rows) (interface{}, error) {
 	s := new(Stock)

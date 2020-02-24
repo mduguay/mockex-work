@@ -19,6 +19,7 @@ const (
 // Scanner will iterate through the rows of the given query and process them
 type Scanner interface {
 	Query() string
+	Params() []interface{}
 	ScanRow(rows *sql.Rows) (interface{}, error)
 }
 
@@ -90,7 +91,7 @@ func (s *Storage) readMultiple(scanner Scanner) (items []interface{}) {
 	stmt, err := s.db.Prepare(scanner.Query())
 	check(err)
 	defer stmt.Close()
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(scanner.Params()...)
 	check(err)
 	defer rows.Close()
 	for rows.Next() {
