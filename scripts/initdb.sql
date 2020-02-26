@@ -9,7 +9,7 @@ CREATE TABLE company (
 );
 
 CREATE TABLE holding (
-  id SERIAL PRIMARY KEY
+  id SERIAL PRIMARY KEY,
   trader_id INT REFERENCES trader(id),
   company_id INT REFERENCES company(id),
   shares INT
@@ -33,7 +33,7 @@ CREATE TABLE quote (
   stamp TIMESTAMP
 );
 
-CREATE INDEX idx_quote_company ON quote(company_id)
+CREATE INDEX idx_quote_company ON quote(company_id);
 
 CREATE TABLE stock (
   id SERIAL PRIMARY KEY,

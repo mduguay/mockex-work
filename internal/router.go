@@ -105,10 +105,8 @@ func (rtr *Router) historyHandler(w http.ResponseWriter, r *http.Request) {
 	hs := new(data.HistoryScanner)
 	hs.Cid = k
 	now := time.Now()
-	// since := now.AddDate(0, -1, 0)
 	hs.Since = now.AddDate(0, -1, 0)
-	//hs.Since = time.Now().Truncate(24 * time.Hour)
-	log.Println(hs.Since)
+	log.Println("Router: Fetching history since:", hs.Since)
 	history := rtr.Storage.readMultiple(hs)
 	json.NewEncoder(w).Encode(history)
 }

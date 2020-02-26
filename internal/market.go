@@ -70,7 +70,6 @@ func (m *Market) backfill() {
 		go stock.BackfillTicks(stocktick, starttime)
 
 		for quote := range stocktick {
-			// Quote in storage should not have high, low, open, close
 			m.Storage.createQuote(quote)
 		}
 	}
