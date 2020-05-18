@@ -33,7 +33,12 @@ SELECT * FROM company;
 
 ### Environment variables
 
-When running, the enironment variables in the `.env` file need to be set. Running in vscode does this automatically.
+Make a copy of the dev environment variables
+```
+cp .env_dev .env
+```
+
+Adjust as needed if your settings differ from the defaults
 
 ---
 
