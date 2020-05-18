@@ -12,17 +12,21 @@ This is a prime example of goroutines in generating stock prices. Postgres is us
 
 ### Postgres
 ```
-pg_ctl -D /usr/local/var/postgres start
-psql -U postgres
-\c mockex
-\dt
-\d holding
+docker pull postgres
+mkdir -p $HOME/docker/volumes/postgres
+docker run --rm   --name pg-docker -e POSTGRES_PASSWORD=postgres64 -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
 ```
 
 To setup the db for the first time (from within psql)
 ```
+psql -h localhost -U postgres -d postgres
+
+create database mockex
+\c mockex
 \i scripts/initdb.sql
 \i scripts/seed.sql
+\d
+SELECT * FROM company;
 ```
 
 ---
